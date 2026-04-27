@@ -2466,8 +2466,8 @@ Required parameters: N/A
 Optional parameters: usage
 
 * Can be absent to provide no further information about what the hash value is calculated over.
-* Can be set to "c509" to indicating that the COSE_CertHash structure as defined in {{RFC9360}} is used, with
-hashValue is calculated over a C509 certificate as defined in {{cose-header-params}}.
+* Can be set to "c509" to indicate that the COSE_CertHash structure as defined in {{RFC9360}} is used, with
+hashValue calculated over a C509 certificate as defined in {{cose-header-params}}.
 
 Encoding considerations: binary
 
