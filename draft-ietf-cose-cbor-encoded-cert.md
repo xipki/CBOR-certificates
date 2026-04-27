@@ -2366,7 +2366,7 @@ Subtype name: cose-c509-privkey
 
 Required parameters: N/A
 
-Optional parameters: usage
+Optional parameters:
 
 Encoding considerations: binary
 
@@ -2406,7 +2406,7 @@ Subtype name: cose-c509-pem
 
 Required parameters: N/A
 
-Optional parameters: usage
+Optional parameters:
 
 Encoding considerations: binary
 
@@ -2438,7 +2438,8 @@ Author: COSE WG
 Change controller: IETF
 
 ### Media Type application/cose-certhash {#cose-certhash}
-When the application/cose-certhash media type is used, the data is a COSE_CertHash structure, see {{RFC9360}}.
+When the application/cose-certhash media type is used, the data is a COSE_CertHash structure as defined in {{RFC9360}}. If the parameter "usage" is set to "c509", the hash value is calculated over a C509 certificate.
+
 
 Type name: application
 
@@ -2449,7 +2450,8 @@ Required parameters: N/A
 Optional parameters: usage
 
 * Can be absent to provide no further information about what the hash value is calculated over.
-* Can be set to "c509" to indicate that the hash value is calculated over a C509 certificate, see {{cose-header-params}}.
+* Can be set to "c509" to indicate that the COSE_CertHash structure as defined in {{RFC9360}} is used, with
+hashValue calculated over a C509 certificate as defined in {{cose-header-params}}.
 
 Encoding considerations: binary
 
