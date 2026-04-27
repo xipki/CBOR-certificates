@@ -62,7 +62,6 @@ normative:
   RFC8126:
   RFC8295:
   RFC8360:
-  RFC8398:
   RFC8610:
   RFC8742:
   RFC8949:
@@ -72,6 +71,7 @@ normative:
   RFC9360:
   RFC9542:
   RFC9549:
+  RFC9598:
   RFC9668:
   RFC9883:
   I-D.ietf-lamps-macaddress-on:
@@ -538,7 +538,7 @@ CBOR encoding of the following extension values are partly supported:
 
 * Subject Alternative Name (subjectAltName). If the subject alternative name only contains general names registered in {{GN}} the extension value can be CBOR encoded. extensionValue is encoded as an array of (int, any) pairs where each pair encodes a general name (see {{GN}}). If subjectAltName contains exactly one dNSName, the array and the int are omitted and extensionValue is the dNSName encoded as a CBOR text string. In addition to the general names defined in {{RFC5280}}, the otherName with type-id id-on-hardwareModuleName, id-on-SmtpUTF8Mailbox and id-on-MACAddress have been given their own ints; such otherName are encoded as follows:
   - For id-on-hardwareModuleName, the value is a CBOR array [ hwType: ~oid, hwSerialNum: bytes ] as specified in {{RFC4108}}.
-  - For id-on-SmtpUTF8Mailbox, the value is a CBOR text as specified in {{RFC8398}}.
+  - For id-on-SmtpUTF8Mailbox, the value is a CBOR text as specified in {{RFC9598}}.
   - For id-on-MACAddress, the value is a CBOR byte string containing 6 octets for EUI-48 and 8 octets for EUI-64 as specified in {{I-D.ietf-lamps-macaddress-on}}.
 
 ~~~~~~~~~~~ cddl
@@ -1857,7 +1857,7 @@ IANA has created a new registry titled "C509 General Names Registry" under the r
 |       | GeneralNameValue: bytes                                   |
 +-------+-----------------------------------------------------------+
 |    -2 | Name:            otherName with SmtpUTF8Mailbox           |
-|       | Comments:        RFC 8398                                 |
+|       | Comments:        RFC 9598                                 |
 |       |                  id-on-SmtpUTF8Mailbox                    |
 |       |                  (1.3.6.1.5.5.7.8.9)                      |
 |       |                  06 08 2B 06 01 05 05 07 08 09            |
