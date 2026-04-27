@@ -343,7 +343,7 @@ The 'signature' field, containing the signature algorithm including parameters, 
 
 In the general case, the sequence of 'RDNAttribute' is encoded as a CBOR array consisting of RDNAttribute elements. RelativeDistinguishedName with more than one AttributeTypeAndValue is not supported. Each RDNAttribute is CBOR-encoded as (type, value), either as an (int, SpecialText) pair or as a (~oid, bytes) tuple.
 
-In the former case, the absolute value of the int encodes the attribute type (see {{fig-attrtype}}) and the sign is used to represent the character string type in the X.509 certificate; positive for utf8String, negative for printableString. Attribute values which are always of type IA5String are unambiguously represented using a non-negative int. Examples include emailAddress and domainComponent (see {{RFC5280}}). In CBOR, all text strings are UTF-8 encoded and in natively signed C509 certificates all CBOR ints SHALL be non-negative. Text strings SHALL still adhere to any {{RFC5280}} restrictions. serialNumber SHALL only contain the 74-character subset of ASCII allowed by printableString and countryName SHALL have length 2. CBOR encoding is allowed for IA5String (if this is the only allowed type, e.g., emailAddress), printableString and utf8String, whereas the string types teletexString, universalString, and bmpString are not supported.
+In the former case, the absolute value of the int encodes the attribute type (see {{fig-rdnattrtype}}) and the sign is used to represent the character string type in the X.509 certificate; positive for utf8String, negative for printableString. Attribute values which are always of type IA5String are unambiguously represented using a non-negative int. Examples include emailAddress and domainComponent (see {{RFC5280}}). In CBOR, all text strings are UTF-8 encoded and in natively signed C509 certificates all CBOR ints SHALL be non-negative. Text strings SHALL still adhere to any {{RFC5280}} restrictions. serialNumber SHALL only contain the 74-character subset of ASCII allowed by printableString and countryName SHALL have length 2. CBOR encoding is allowed for IA5String (if this is the only allowed type, e.g., emailAddress), printableString and utf8String, whereas the string types teletexString, universalString, and bmpString are not supported.
 
 
 The text strings are further optimized as follows:
@@ -559,9 +559,9 @@ CBOR encoding of the following extension values is partly supported:
 
 ~~~~~~~~~~~ cddl
    DistributionPointName = [
-     fullName  [ 2 * text ] / text,
-     reasons   uint / null,
-     cRLIssuer Name / null,
+     fullName:  [ 2 * text ] / text,
+     reasons:   uint / null,
+     cRLIssuer: Name / null,
    ]
 
    CRLDistributionPoints = [ + DistributionPointName ] / text
@@ -679,7 +679,7 @@ C509CertData = bytes .cborseq C509Certificate
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
 
-C509CertData thus includes the unwrapped CBOR sequence, ~C509Certificate. The byte string encoding includes the length of each certificate which simplifies parsing. See {{other-examples}} for an example.
+C509CertData thus includes the unwrapped CBOR sequence, ~C509Certificate. The byte string encoding includes the length of each certificate, which simplifies parsing. See {{other-examples}} for an example.
 
 The COSE_C509 item has media type application/cose-c509-cert, see {{c509-cert}}. Different CoAP Content-Formats are defined depending on "usage" = "chain" or not, see {{content-format}}.  Stored file formats are defined for the cases with/without ("usage" = "chain") with "magic numbers" TBD8/TBD6 using the reserved CBOR tag 55799 and the corresponding Content-Formats TBD15/TBD3, enveloped as described in {{Section 2.2 of RFC9277}}.
 
@@ -749,7 +749,7 @@ Although this specification requires the use of Deterministically Encoded CBOR (
 
 Where both a specific and a generic CBOR encoding are supported, the specific CBOR encoding MUST be used. For example, when a specific CBOR encoding of an extension is defined in {{ext-encoding}} and the C509 Extensions Registry, that specific encoding MUST be used. In particular, when a specific otherName encoding is available, identified by a negative integer value in the C509 General Names Registry, it MUST be used.
 
-Native C509 certificates MUST use only specific CBOR-encoded fields. However, when decoding non-native C509 certificatea, the decoder may need to support, for example, the (extensionID: ~oid, extensionValue: bytes / [bytes]) encoding of an extension for which an (extensionID: int, extensionValue: Defined) encoding exists. One reason is that the certificate might have been issued before the specific CBOR extension was registered.
+Native C509 certificates MUST use only specific CBOR-encoded fields. However, when decoding non-native C509 certificates, the decoder may need to support, for example, the (extensionID: ~oid, extensionValue: bytes / [bytes]) encoding of an extension for which an (extensionID: int, extensionValue: Defined) encoding exists. One reason is that the certificate might have been issued before the specific CBOR extension was registered.
 
 ## C509 Name in TLS and DTLS
 
@@ -912,7 +912,7 @@ Different types of Certification Request Templates can be defined (see {{temp-ty
 
 The presence of a Defined (non-undefined) value in a C509CertificationRequestTemplate indicates that the server expects the client to use that value in the certification request. If multiple AlgorithmIdentifier or c509CertificationRequestType values are present, the server expects the client to select one of them for use in the Certification Request. The presence of an undefined value indicates that the client is expected to provide an appropriate value for that field. For example, if the server includes a subjectAltName with a GeneralNameType iPAddress and a GeneralNameValue empty byte string, this means that the client SHOULD fill in a corresponding GeneralNameValue.
 
-For AttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal shall not be less than minimal, and maximal shall be positive. Negative attributeType is not allowed.
+For AttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal SHALL not be less than minimal, and maximal SHALL be positive. Negative attributeType is not allowed.
 
 For ExtensionTemplate, the field "optional" specifies whether an extension of the given extensionID is optional. Negative extensionID is not allowed.
 
@@ -1006,7 +1006,7 @@ The mechanism in this document does not reveal any additional information compar
 
 Any issues with decoding or parsing a C509 certificate should be handled exactly as how such errors would be handled for the corresponding X.509 certificate. For example, a non-critical extension MAY be ignored if it is not recognized, see {{Section 4.2 of RFC5280}}.
 
-As stated in {{cose-header-params}}, the contents of the COSE Header Parameters c5b, c5c, c5t, c5u is untrusted input that potentially may be verified using existing trust anchors or other trust establishment mechanism out of scope of this document. Similar security considerations as x5bag, x5chain, x5t and x5u applies, see {{RFC9360}}. Security considerations of the COSE protected and unprotected headers is discussed in {{RFC9052}}.
+As stated in {{cose-header-params}}, the contents of the COSE Header Parameters c5b, c5c, c5t, c5u is untrusted input that potentially may be verified using existing trust anchors or other trust establishment mechanism out of scope of this document. Similar security considerations as x5bag, x5chain, x5t and x5u apply, see {{RFC9360}}. Security considerations of the COSE protected and unprotected headers are discussed in {{RFC9052}}.
 
 
 # IANA Considerations {#iana}
@@ -1063,7 +1063,7 @@ IANA has created a new registry titled "C509 Certification Request Types" under 
 
 ## C509 Private Key Types Registry {#privkeys}
 
-IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, and subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
+IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1076,12 +1076,12 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 |       | subjectPrivateKey: COSE_Key                               |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-rivkeys title="C509 Private Key Types"}
+{: #fig-privkeys title="C509 Private Key Types"}
 {: artwork-align="center"}
 
 ## C509 Certification Request Templates Types Registry {#temp-type}
 
-IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review" and "Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1095,7 +1095,7 @@ IANA has created a new registry titled "C509 Certification Request Templates Typ
 
 ## C509 RDN Attributes Registry {#rdnatttype}
 
-IANA has created a new registry titled "C509 RDN Attributes" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments and Reference, where Value is a non-negative integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[0, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions. If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
+IANA has created a new registry titled "C509 RDN Attributes" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments and Reference, where Value is a non-negative integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[0, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
 
 The initial contents of the registry are:
 
@@ -1274,7 +1274,7 @@ The initial contents of the registry are:
 |    30 | Name:            Unstructured Address                     |
 |       | Identifiers:     unstructuredAddress                      |
 |       | OID:             1.2.840.113549.1.9.8                     |
-|       | DER:             06 0A 2A 86 48 86 F7 0D 01 09 08 00      |
+|       | DER:             06 0A 2A 86 48 86 F7 0D 01 09 08         |
 |       | Comments:        RFC 2985                                 |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
@@ -1283,7 +1283,7 @@ The initial contents of the registry are:
 
 ## C509 CR Attributes Registry {#cratttype}
 
-IANA has created a new registry titled "C509 CR Attributes" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, attributeValue, and Reference, where Value is an integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions. If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
+IANA has created a new registry titled "C509 CR Attributes" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, attributeValue, and Reference, where Value is an integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
 
 The initial contents of the registry are:
 
@@ -1313,7 +1313,7 @@ The initial contents of the registry are:
 |       | attributeValue:  PrivateKeyPossessionStatement            |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-attrtype title="C509 CRAttributes"}
+{: #fig-crattrtype title="C509 CRAttributes"}
 {: artwork-align="center"}
 
 ## C509 Extensions Registry {#extype}
@@ -1336,7 +1336,7 @@ IANA has created a new registry titled "C509 Extensions" under the new registry 
 |       | OID:             2.5.29.15                                |
 |       | DER:             06 03 55 1D 0F                           |
 |       | Comments:        RFC 5280                                 |
-|       | AttributeValue:  KeyUsage                                 |
+|       | extensionValue:  KeyUsage                                 |
 +-------+-----------------------------------------------------------+
 |     3 | Name:            Subject Alternative Name                 |
 |       | Identifiers:     subjectAltName                           |
@@ -1654,7 +1654,7 @@ IANA has created a new registry titled "C509 Policies Qualifiers" under the regi
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | Certificate Policy                                        |
+| Value | Policy Qualifier                                          |
 +=======+===========================================================+
 |     1 | Name:            Certification Practice Statement         |
 |       | Identifiers:     id-qt-cps, cps                           |
@@ -2045,7 +2045,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 |       |              A0 0F 30 0D 06 09 60 86 48 01 65 03 04 02 01 |
 |       |              05 00 A1 1C 30 1A 06 09 2A 86 48 86 F7 0D 01 |
 |       |              01 08 30 0D 06 09 60 86 48 01 65 03 04 02 01 |
-|       |              05 00 a2 03 02 01 20                         |
+|       |              05 00 A2 03 02 01 20                         |
 |       | Comments:                                                 |
 +-------+-----------------------------------------------------------+
 |    27 | Name:        RSASSA-PSS with SHA-384                      |
@@ -2100,7 +2100,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Identifiers: rsaEncryption                                |
 |       | OID:         1.2.840.113549.1.1.1                         |
 |       | Parameters:  NULL                                         |
-|       | DER:         30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 |
+|       | DER:         30 0D 06 09 2A 86 48 86 F7 0D 01 01 01 05 00 |
 |       | Comments:    Compressed subjectPublicKey                  |
 +-------+-----------------------------------------------------------+
 |     1 | Name:        EC Public Key (Weierstrass) with secp256r1   |
@@ -2214,7 +2214,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 
 ### Suitability of different public key algorithms for use within IoT scenarios
 
-The public key algorithms registry {{pkalg}} specifies a number of algorithms, not all which are suitable for usage with constrained devices. RSA requires large keys and large signature sizes compared to elliptic curve cryptography (ECC), which together with resource-efficient implementations of named elliptic curves (Montgomery, Edwards and Weierstrass curves) make them suitable candidates for IoT public key usage.
+The public key algorithms registry {{pkalg}} specifies a number of algorithms, not all of which are suitable for usage with constrained devices. RSA requires large keys and large signature sizes compared to elliptic curve cryptography (ECC), which together with resource-efficient implementations of named elliptic curves (Montgomery, Edwards and Weierstrass curves) make them suitable candidates for IoT public key usage.
 
 ## COSE Header Parameters Registry {#cose}
 
@@ -2226,7 +2226,7 @@ IANA is requested to assign the entries in {{iana-sender}} to the "COSE Header A
 
 ## Media Type Application Registry
 
-IANA is requested to assign the following entries in to the "application" registry in the registry group "Media Types" with this document as reference.
+IANA is requested to assign the following entries into the "application" registry in the registry group "Media Types" with this document as reference.
 
 ### Media Type application/cose-c509-cert {#c509-cert}
 When the application/cose-c509-cert media type is used, the data is a COSE_C509 structure. If the parameter "usage" is set to "chain", this sequence indicates a certificate chain.
