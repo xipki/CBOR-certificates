@@ -55,7 +55,6 @@ normative:
   RFC5958:
   RFC6066:
   RFC6698:
-  RFC6962:
   RFC7030:
   RFC7120:
   RFC7250:
@@ -63,7 +62,6 @@ normative:
   RFC8126:
   RFC8295:
   RFC8360:
-  RFC8398:
   RFC8610:
   RFC8742:
   RFC8949:
@@ -73,6 +71,7 @@ normative:
   RFC9360:
   RFC9542:
   RFC9549:
+  RFC9598:
   RFC9668:
   RFC9883:
   I-D.ietf-lamps-macaddress-on:
@@ -486,11 +485,60 @@ CBOR encoding of the following extension values is fully supported:
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
 
+* IPAddrBlocks (id-pe-ipAddrBlocks). The X.509 extension IPAddrBlocks is specified in {{RFC3779}}. The ASN.1 BIT STRING value of IPAddress is converted to a byte sequence defined as:
+
+  ```
+  unusedBits || value
+  ```
+
+  where unusedBits is a single octet indicating the number of unused bits in the final octet of the BIT STRING, and value is the sequence of octets containing the BIT STRING value. This byte sequence preserves the exact information contained in the ASN.1 BIT STRING.
+
+  For each IPAddressFamily, the representation is selected as follows:
+
+    - If inherit is present, `null` SHALL be used.
+
+    - Otherwise, if the byte sequence of any IPAddress (including addressPrefix, and the min and max fields of addressRange) exceeds 8 octets in length, the IPAddressChoice representation SHALL be used.
+
+    - Otherwise, the IntIPAddressChoice representation SHALL be used.
+
+  For IntIPAddressChoice, IntAddressPrefix and the min and max values of IntAddressRange SHALL be encoded as big-endian integers representing the following byte sequence:
+
+  ```
+  (unusedBits + 1) || value
+  ```
+
+  The first byte is encoded as (unusedBits + 1) instead of unusedBits in order to guarantee a non-zero value. With the exception of the first IPAddress, each subsequent IPAddress SHALL be encoded as a CBOR integer representing the difference from the previous IPAddress.
+
+  As specified in {{RFC3779}}, the IPAddressFamily element contains an Address Family Identifier (AFI) and, optionally, a Subsequent Address Family Identifier (SAFI). AFIs and SAFIs are defined in [IANA-AFI] and [IANA-SAFI], respectively. The limitations specified in {{RFC3779}} apply here as well.
+
+~~~~~~~~~~~ cddl
+   IntAddressPrefix = int
+   IntAddressRange  = [ min: int, max: int ]
+   IntIPAddressOrRange = IntAddressPrefix / IntAddressRange
+   IntIPAddressChoice  = [ + IntIPAddressOrRange ]
+
+   AddressPrefix = bytes
+   AddressRange  = [ min: bytes, max: bytes ]
+   IPAddressOrRange = AddressPrefix / AddressRange
+   IPAddressChoice  = [ + IPAddressOrRange ]
+
+   IPAddressFamily = (AFI: uint, SAFI: uint / null,
+                      IntIPAddressChoice / IPAddressChoice / null)
+   IPAddrBlocks = [ + IPAddressFamily ]
+~~~~~~~~~~~
+{: sourcecode-name="c509.cddl"}
+
+* IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
+
+* OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR encoded. The CBOR encoded extensionValue is the value null.
+
+* TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
+
 CBOR encoding of the following extension values are partly supported:
 
 * Subject Alternative Name (subjectAltName). If the subject alternative name only contains general names registered in {{GN}} the extension value can be CBOR encoded. extensionValue is encoded as an array of (int, any) pairs where each pair encodes a general name (see {{GN}}). If subjectAltName contains exactly one dNSName, the array and the int are omitted and extensionValue is the dNSName encoded as a CBOR text string. In addition to the general names defined in {{RFC5280}}, the otherName with type-id id-on-hardwareModuleName, id-on-SmtpUTF8Mailbox and id-on-MACAddress have been given their own ints; such otherName are encoded as follows:
   - For id-on-hardwareModuleName, the value is a CBOR array [ hwType: ~oid, hwSerialNum: bytes ] as specified in {{RFC4108}}.
-  - For id-on-SmtpUTF8Mailbox, the value is a CBOR text as specified in {{RFC8398}}.
+  - For id-on-SmtpUTF8Mailbox, the value is a CBOR text as specified in {{RFC9598}}.
   - For id-on-MACAddress, the value is a CBOR byte string containing 6 octets for EUI-48 and 8 octets for EUI-64 as specified in {{I-D.ietf-lamps-macaddress-on}}.
 
 ~~~~~~~~~~~ cddl
@@ -599,57 +647,6 @@ RDNAttributes = (
 {: sourcecode-name="c509.cddl"}
 
 * AS Identifiers v2 (id-pe-autonomousSysIds-v2). The X.509 extension AS Identifiers v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "AS Identifiers".
-
-* IPAddrBlocks (id-pe-ipAddrBlocks). The X.509 extension IPAddrBlocks is specified in {{RFC3779}}. The ASN.1 BIT STRING value of IPAddress is converted to a byte sequence defined as:
-
-  ```
-  unusedBits || value
-  ```
-
-  where unusedBits is a single octet indicating the number of unused bits in the final octet of the BIT STRING, and value is the sequence of octets containing the BIT STRING value. This byte sequence preserves the exact information contained in the ASN.1 BIT STRING.
-
-  For each IPAddressFamily, the representation is selected as follows:
-
-    - If inherit is present, `null` SHALL be used.
-
-    - Otherwise, if the byte sequence of any IPAddress (including addressPrefix, and the min and max fields of addressRange) exceeds 8 octets in length, the IPAddressChoice representation SHALL be used.
-
-    - Otherwise, the IntIPAddressChoice representation SHALL be used.
-
-  For IntIPAddressChoice, IntAddressPrefix and the min and max values of IntAddressRange SHALL be encoded as big-endian integers representing the following byte sequence:
-
-  ```
-  (unusedBits + 1) || value
-  ```
-
-  The first byte is encoded as (unusedBits + 1) instead of unusedBits in order to guarantee a non-zero value. With the exception of the first IPAddress, each subsequent IPAddress SHALL be encoded as a CBOR integer representing the difference from the previous IPAddress.
-
-  As specified in {{RFC3779}}, the IPAddressFamily element contains an Address Family Identifier (AFI) and, optionally, a Subsequent Address Family Identifier (SAFI). AFIs and SAFIs are defined in [IANA-AFI] and [IANA-SAFI], respectively. The limitations specified in {{RFC3779}} apply here as well.
-
-~~~~~~~~~~~ cddl
-   IntAddressPrefix = int
-   IntAddressRange  = [ min: int, max: int ]
-   IntIPAddressOrRange = IntAddressPrefix / IntAddressRange
-   IntIPAddressChoice  = [ + IntIPAddressOrRange ]
-
-   AddressPrefix = bytes
-   AddressRange  = [ min: bytes, max: bytes ]
-   IPAddressOrRange = AddressPrefix / AddressRange
-   IPAddressChoice  = [ + IPAddressOrRange ]
-
-   IPAddressFamily = (AFI: uint, SAFI: uint / null,
-                      IntIPAddressChoice / IPAddressChoice / null)
-   IPAddrBlocks = [ + IPAddressFamily ]
-~~~~~~~~~~~
-{: sourcecode-name="c509.cddl"}
-
-* IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
-
-* OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR encoded. The CBOR encoded extensionValue is the value null.
-
-* Precertificate Signing Certificate. The CBOR encoded extensionValue is the value null.
-
-* TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
 ~~~~~~~~~~~ cddl
    TLSFeatures = [* feature: uint]
@@ -951,7 +948,7 @@ The CBOR encoding of the sample certificate chains given in {{appA}} results in 
 
 In the examples using FN-DSA and ML-DSA certificate chains, the largest portion of the certificate size consists of the public keys and signatures, which are essentially random. As a result, both Brotli and C509 achieve only very limited size reduction. However, C509 still performs slightly better.
 
-~~~~~~~~~ aasvg
+~~~~~~~~~
 +----------------------------------------+-----------+-----------+
 | Description (number of certs)          | COSE_X509 | COSE_C509 |
 +----------------------------------------+-----------+-----------+
@@ -972,7 +969,7 @@ In the examples using FN-DSA and ML-DSA certificate chains, the largest portion 
 {: #fig-size-COSE title="Comparing Sizes of Certificate Chains in COSE. Number of bytes (length of certificate chain)."}
 {: artwork-align="center"}
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-----------------------+-------+---------+-------+--------+
 | Description           | X.509 | X.509 + | C509  | C509 + |
 | (number of certs)     |       | Brotli  |       | Brotli |
@@ -1030,7 +1027,7 @@ All assignments according to "IETF Review with Expert Review" are made on a "IET
 
 IANA has created a new registry titled "C509 Certificate Types" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. It is mandatory to specify content in all columns. For values in the interval \[-24, 23\], the registration procedure is "IETF Review with Expert Review". For all other values, the registration procedure is "Expert Review".  The initial contents of the registry are (see {{version}}):
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-------------------------------------------+
 | Value | Description                               |
 +=======+===========================================+
@@ -1050,7 +1047,7 @@ IANA has created a new registry titled "C509 Certificate Types" under the regist
 
 IANA has created a new registry titled "C509 Certification Request Types" under the new registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Description                                               |
 +=======+===========================================================+
@@ -1070,7 +1067,7 @@ IANA has created a new registry titled "C509 Certification Request Types" under 
 
 IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Comments, and subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Private Key Types                                         |
 +=======+===========================================================+
@@ -1088,7 +1085,7 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 
 IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509) Parameters". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review" and "Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Description                                               |
 +=======+===========================================================+
@@ -1104,7 +1101,7 @@ IANA has created a new registry titled "C509 RDN Attributes" in the new registry
 
 The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | RDN Attribute                                             |
 +=======+===========================================================+
@@ -1292,7 +1289,7 @@ IANA has created a new registry titled "C509 CR Attributes" under the registry g
 
 The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | CR Attribute                                              |
 +=======+===========================================================+
@@ -1325,7 +1322,7 @@ The initial contents of the registry are:
 
 IANA has created a new registry titled "C509 Extensions Registry" under the new registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, extensionValue, and Reference, where Value is a positive integer, and the other columns are text strings. The fields Name, OID, DER, and extensionValue are mandatory. For values in the interval \[1, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Extension                                                 |
 +=======+===========================================================+
@@ -1483,13 +1480,6 @@ IANA has created a new registry titled "C509 Extensions Registry" under the new 
 |       | Comments:        RFC 6960                                 |
 |       | extensionValue:  null                                     |
 +-------+-----------------------------------------------------------+
-|    37 | Name:            Precertificate Signing Certificate       |
-|       | Identifiers:                                              |
-|       | OID:             1.3.6.1.4.1.11129.2.4.3                  |
-|       | DER:             06 0A 2B 06 01 04 01 D6 79 02 04 03      |
-|       | Comments:        RFC 6962                                 |
-|       | extensionValue:  null                                     |
-+-------+-----------------------------------------------------------+
 |    38 | Name:            TLS Features                             |
 |       | Identifiers:     id-pe-tlsfeature                         |
 |       | OID:             1.3.6.1.5.5.7.1.24                       |
@@ -1505,7 +1495,7 @@ IANA has created a new registry titled "C509 Extensions Registry" under the new 
 
 IANA has created a new registry titled "C509 Certificate Policies Registry" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Certificate Policy                                        |
 +=======+===========================================================+
@@ -1664,7 +1654,7 @@ IANA has created a new registry titled "C509 Certificate Policies Registry" unde
 
 IANA has created a new registry titled "C509 Policies Qualifiers Registry" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Certificate Policy                                        |
 +=======+===========================================================+
@@ -1688,7 +1678,7 @@ IANA has created a new registry titled "C509 Policies Qualifiers Registry" under
 
 IANA has created a new registry titled "C509 Information Access Registry" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | Information Access                                        |
 +=======+===========================================================+
@@ -1742,7 +1732,7 @@ IANA has created a new registry titled "C509 Information Access Registry" under 
 
 IANA has created a new registry titled "C509 Extended Key Usages Registry" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+---------------------------------------------------------+
 | Value | Extended Key Usage                                      |
 +=======+=========================================================+
@@ -1842,12 +1832,6 @@ IANA has created a new registry titled "C509 Extended Key Usages Registry" under
 |       | DER:             06 08 2B 06 01 05 05 07 03 20          |
 |       | Comments:        RFC 9480                               |
 +-------+---------------------------------------------------------+
-|    19 | Name:            Certificate Transparency               |
-|       | Identifiers:                                            |
-|       | OID:             1.3.6.1.4.1.11129.2.4.4                |
-|       | DER:             06 0A 2B 06 01 04 01 D6 79 02 04 04    |
-|       | Comments:        RFC 6962                               |
-+-------+---------------------------------------------------------+
 |    20 | Name:            Wi-SUN FAN Device                      |
 |       | Identifiers:     id-kp-wisun-fan-device                 |
 |       | OID:             1.3.6.1.4.1.45605.1                    |
@@ -1861,7 +1845,7 @@ IANA has created a new registry titled "C509 Extended Key Usages Registry" under
 ## C509 General Names Registry {#GN}
 IANA has created a new registry titled "C509 General Names Registry" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Comments, GeneralNameValue, and Reference, where Value is an integer, and the other columns are text strings. The fields Name and GeneralNameValue are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | General Names                                             |
 +=======+===========================================================+
@@ -1873,7 +1857,7 @@ IANA has created a new registry titled "C509 General Names Registry" under the r
 |       | GeneralNameValue: bytes                                   |
 +-------+-----------------------------------------------------------+
 |    -2 | Name:            otherName with SmtpUTF8Mailbox           |
-|       | Comments:        RFC 8398                                 |
+|       | Comments:        RFC 9598                                 |
 |       |                  id-on-SmtpUTF8Mailbox                    |
 |       |                  (1.3.6.1.5.5.7.8.9)                      |
 |       |                  06 08 2B 06 01 05 05 07 08 09            |
@@ -1924,7 +1908,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 
 <!-- NOTE: Check referenced section number hardcoded in the table. -->
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | X.509 Signature Algorithms                                |
 +=======+===========================================================+
@@ -2110,7 +2094,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 
 IANA has created a new registry titled "C509 Public Key Algorithms" under the registry group "CBOR Encoded X.509 (C509) Parameters". The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. If the public key can only be used with one signature algorithm and the OID of the public key algorithm is the same as the signature algorithm, then the value MUST be chosen equal to the value of signature algorithm, see {{sigalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
 | Value | X.509 Public Key Algorithms                               |
 +=======+===========================================================+
@@ -2505,7 +2489,7 @@ IANA is requested to add entries for "application/cose-certhash" to the "CoAP Co
 
 IANA is requested to add entries for "application/cbor" to the "CoAP Content-Formats" registry in the registry group "Constrained RESTful Environments (CoRE) Parameters", in the case when the encoding is a CBOR text string containing a URI, see {{RFC3986}}.
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 
 +----------------------+---------+-----------+-------+------------+
 | Content              | Content | Media     | ID    | Reference  |
@@ -2545,14 +2529,14 @@ IANA is requested to add entries for "application/cbor" to the "CoAP Content-For
 
 This document registers the following entry in the "TLS Certificate Types" registry in the registry group "Transport Layer Security (TLS) Extensions". The new certificate type can be used with additional TLS certificate compression {{RFC8879}}. For TLS 1.3, the C509 certificate type is defined as a new case in the CertificateEntry struct specified in {{Section 4.4.2 of RFC8446}}:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 case C509:
   opaque c509_data<1..2^24-1>;
 ~~~~~~~~~~~
 where c509_data is the CBOR sequence ~C509Certificate (an unwrapped C509Certificate). For TLS 1.2 the same construction is applied with a similar union type defined for the Certificate struct in {{Section 7.4.2 of RFC5246}}. Note that, similar to COSE_C509, the TLS handshake contains the length of each certificate. The TLS extensions client_certificate_type and server_certificate_type {{RFC7250}} are used to negotiate the use of C509.
 
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+------------------+-------------+--------------------------+
 | Value | Name             | Recommended | Comment                  |
 +=======+==================+=============+==========================+
@@ -2564,7 +2548,7 @@ where c509_data is the CBOR sequence ~C509Certificate (an unwrapped C509Certific
 
 This document registers the following entry in the "TLSA Selectors" registry in the registry group "DNS-Based Authentication of Named Entities (DANE) Parameters". The C509 certificate data, C509CertData, is defined in {{cose-header-params}}.
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 
 +-------+---------+------------------------+-------------------+
 | Value | Acronym |   Short Description    |     Reference     |
@@ -2580,7 +2564,7 @@ The TLSA selectors registry defined in {{RFC6698}} originally only applied to PK
 
 This document registers the following entry in the "EDHOC Authentication Credential Types" registry in the registry group "Ephemeral Diffie-Hellman Over COSE (EDHOC)". This is useful to identify C509 certificates as a supported authentication credential type to use with EDHOC {{RFC9528}}, for example, during discovery of EDHOC resources, see {{RFC9668}}.
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +-------+----------------------+-------------------+
 | Value | Description          |     Reference     |
 +=======+======================+===================+
@@ -2592,7 +2576,7 @@ This document registers the following entry in the "EDHOC Authentication Credent
 
 This document regists the following entry in the "SMI Security for PKIX Relative Distinguished Name Attribute" registry [RFC7299]:
 
-~~~~~~~~~~~ aasvg
+~~~~~~~~~~~
 +---------+----------------------+-------------------+
 | Decimal | Description          |     Reference     |
 +=========+======================+===================+
