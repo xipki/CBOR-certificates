@@ -485,6 +485,55 @@ CBOR encoding of the following extension values is fully supported:
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
 
+* IPAddrBlocks (id-pe-ipAddrBlocks). The X.509 extension IPAddrBlocks is specified in {{RFC3779}}. The ASN.1 BIT STRING value of IPAddress is converted to a byte sequence defined as:
+
+  ```
+  unusedBits || value
+  ```
+
+  where unusedBits is a single octet indicating the number of unused bits in the final octet of the BIT STRING, and value is the sequence of octets containing the BIT STRING value. This byte sequence preserves the exact information contained in the ASN.1 BIT STRING.
+
+  For each IPAddressFamily, the representation is selected as follows:
+
+    - If inherit is present, `null` SHALL be used.
+
+    - Otherwise, if the byte sequence of any IPAddress (including addressPrefix, and the min and max fields of addressRange) exceeds 8 octets in length, the IPAddressChoice representation SHALL be used.
+
+    - Otherwise, the IntIPAddressChoice representation SHALL be used.
+
+  For IntIPAddressChoice, IntAddressPrefix and the min and max values of IntAddressRange SHALL be encoded as big-endian integers representing the following byte sequence:
+
+  ```
+  (unusedBits + 1) || value
+  ```
+
+  The first byte is encoded as (unusedBits + 1) instead of unusedBits in order to guarantee a non-zero value. With the exception of the first IPAddress, each subsequent IPAddress SHALL be encoded as a CBOR integer representing the difference from the previous IPAddress.
+
+  As specified in {{RFC3779}}, the IPAddressFamily element contains an Address Family Identifier (AFI) and, optionally, a Subsequent Address Family Identifier (SAFI). AFIs and SAFIs are defined in [IANA-AFI] and [IANA-SAFI], respectively. The limitations specified in {{RFC3779}} apply here as well.
+
+~~~~~~~~~~~ cddl
+   IntAddressPrefix = int
+   IntAddressRange  = [ min: int, max: int ]
+   IntIPAddressOrRange = IntAddressPrefix / IntAddressRange
+   IntIPAddressChoice  = [ + IntIPAddressOrRange ]
+
+   AddressPrefix = bytes
+   AddressRange  = [ min: bytes, max: bytes ]
+   IPAddressOrRange = AddressPrefix / AddressRange
+   IPAddressChoice  = [ + IPAddressOrRange ]
+
+   IPAddressFamily = (AFI: uint, SAFI: uint / null,
+                      IntIPAddressChoice / IPAddressChoice / null)
+   IPAddrBlocks = [ + IPAddressFamily ]
+~~~~~~~~~~~
+{: sourcecode-name="c509.cddl"}
+
+* IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
+
+* OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR encoded. The CBOR encoded extensionValue is the value null.
+
+* TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
+
 CBOR encoding of the following extension values are partly supported:
 
 * Subject Alternative Name (subjectAltName). If the subject alternative name only contains general names registered in {{GN}} the extension value can be CBOR encoded. extensionValue is encoded as an array of (int, any) pairs where each pair encodes a general name (see {{GN}}). If subjectAltName contains exactly one dNSName, the array and the int are omitted and extensionValue is the dNSName encoded as a CBOR text string. In addition to the general names defined in {{RFC5280}}, the otherName with type-id id-on-hardwareModuleName, id-on-SmtpUTF8Mailbox and id-on-MACAddress have been given their own ints; such otherName are encoded as follows:
@@ -598,55 +647,6 @@ RDNAttributes = (
 {: sourcecode-name="c509.cddl"}
 
 * AS Identifiers v2 (id-pe-autonomousSysIds-v2). The X.509 extension AS Identifiers v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "AS Identifiers".
-
-* IPAddrBlocks (id-pe-ipAddrBlocks). The X.509 extension IPAddrBlocks is specified in {{RFC3779}}. The ASN.1 BIT STRING value of IPAddress is converted to a byte sequence defined as:
-
-  ```
-  unusedBits || value
-  ```
-
-  where unusedBits is a single octet indicating the number of unused bits in the final octet of the BIT STRING, and value is the sequence of octets containing the BIT STRING value. This byte sequence preserves the exact information contained in the ASN.1 BIT STRING.
-
-  For each IPAddressFamily, the representation is selected as follows:
-
-    - If inherit is present, `null` SHALL be used.
-
-    - Otherwise, if the byte sequence of any IPAddress (including addressPrefix, and the min and max fields of addressRange) exceeds 8 octets in length, the IPAddressChoice representation SHALL be used.
-
-    - Otherwise, the IntIPAddressChoice representation SHALL be used.
-
-  For IntIPAddressChoice, IntAddressPrefix and the min and max values of IntAddressRange SHALL be encoded as big-endian integers representing the following byte sequence:
-
-  ```
-  (unusedBits + 1) || value
-  ```
-
-  The first byte is encoded as (unusedBits + 1) instead of unusedBits in order to guarantee a non-zero value. With the exception of the first IPAddress, each subsequent IPAddress SHALL be encoded as a CBOR integer representing the difference from the previous IPAddress.
-
-  As specified in {{RFC3779}}, the IPAddressFamily element contains an Address Family Identifier (AFI) and, optionally, a Subsequent Address Family Identifier (SAFI). AFIs and SAFIs are defined in [IANA-AFI] and [IANA-SAFI], respectively. The limitations specified in {{RFC3779}} apply here as well.
-
-~~~~~~~~~~~ cddl
-   IntAddressPrefix = int
-   IntAddressRange  = [ min: int, max: int ]
-   IntIPAddressOrRange = IntAddressPrefix / IntAddressRange
-   IntIPAddressChoice  = [ + IntIPAddressOrRange ]
-
-   AddressPrefix = bytes
-   AddressRange  = [ min: bytes, max: bytes ]
-   IPAddressOrRange = AddressPrefix / AddressRange
-   IPAddressChoice  = [ + IPAddressOrRange ]
-
-   IPAddressFamily = (AFI: uint, SAFI: uint / null,
-                      IntIPAddressChoice / IPAddressChoice / null)
-   IPAddrBlocks = [ + IPAddressFamily ]
-~~~~~~~~~~~
-{: sourcecode-name="c509.cddl"}
-
-* IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
-
-* OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR encoded. The CBOR encoded extensionValue is the value null.
-
-* TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
 ~~~~~~~~~~~ cddl
    TLSFeatures = [* feature: uint]
