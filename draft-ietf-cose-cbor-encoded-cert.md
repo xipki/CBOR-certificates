@@ -55,7 +55,6 @@ normative:
   RFC5958:
   RFC6066:
   RFC6698:
-  RFC6962:
   RFC7030:
   RFC7120:
   RFC7250:
@@ -646,8 +645,6 @@ RDNAttributes = (
 * IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
 
 * OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR encoded. The CBOR encoded extensionValue is the value null.
-
-* Precertificate Signing Certificate. The CBOR encoded extensionValue is the value null.
 
 * TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
@@ -1483,13 +1480,6 @@ IANA has created a new registry titled "C509 Extensions Registry" under the new 
 |       | Comments:        RFC 6960                                 |
 |       | extensionValue:  null                                     |
 +-------+-----------------------------------------------------------+
-|    37 | Name:            Precertificate Signing Certificate       |
-|       | Identifiers:                                              |
-|       | OID:             1.3.6.1.4.1.11129.2.4.3                  |
-|       | DER:             06 0A 2B 06 01 04 01 D6 79 02 04 03      |
-|       | Comments:        RFC 6962                                 |
-|       | extensionValue:  null                                     |
-+-------+-----------------------------------------------------------+
 |    38 | Name:            TLS Features                             |
 |       | Identifiers:     id-pe-tlsfeature                         |
 |       | OID:             1.3.6.1.5.5.7.1.24                       |
@@ -1841,12 +1831,6 @@ IANA has created a new registry titled "C509 Extended Key Usages Registry" under
 |       | OID:             1.3.6.1.5.5.7.3.32                     |
 |       | DER:             06 08 2B 06 01 05 05 07 03 20          |
 |       | Comments:        RFC 9480                               |
-+-------+---------------------------------------------------------+
-|    19 | Name:            Certificate Transparency               |
-|       | Identifiers:                                            |
-|       | OID:             1.3.6.1.4.1.11129.2.4.4                |
-|       | DER:             06 0A 2B 06 01 04 01 D6 79 02 04 04    |
-|       | Comments:        RFC 6962                               |
 +-------+---------------------------------------------------------+
 |    20 | Name:            Wi-SUN FAN Device                      |
 |       | Identifiers:     id-kp-wisun-fan-device                 |
