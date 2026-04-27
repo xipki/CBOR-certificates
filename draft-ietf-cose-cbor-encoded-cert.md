@@ -273,7 +273,7 @@ In the encoding described below, the elements in arrays are always encoded in th
 
 ## Message Fields {#message-fields}
 
-This section describes the X.509 fields and their CBOR encodings and uses them in the definition of C509 certificates; see {{fig-CBORCertCDDL}}. While much of {{RFC5280}} that is used in practice is supported, there are a few instances marked "not supported" for which no alternative is provided and, therefore, no C509 encoding can be generated.
+This section describes the X.509 fields and their CBOR encodings and uses them in the definition of C509 certificates; see {{fig-CBORCertCDDL}}. While many of {{RFC5280}} encodings are supported, there are a few instances marked "not supported" for which no alternative is provided and, therefore, no C509 encoding can be generated.
 
 The following Concise Data Definition Language (CDDL) defines the CBOR array C509Certificate and the CBOR Sequence {{RFC8742}} TBSCertificate. The member names therefore have documentary value only. Applications that do not require a CBOR item MAY represent C509 certificates using the CBOR sequence ~C509Certificate (unwrapped C509Certificate). Examples are given in the appendices; see, for example, {{rfc7925-prof}}.
 
@@ -352,7 +352,7 @@ The text strings are further optimized as follows:
   * If the text string contains an EUI-64 of the form "HH-HH-HH-HH-HH-HH-HH-HH" where each 'H' is one of the symbols '0'-'9' or 'A'-'F', it is encoded as a CBOR tagged MAC address using the CBOR tag 48, see {{Section 2.4 of RFC9542}}. If of the form "HH-HH-HH-FF-FE-HH-HH-HH", it is encoded as a 48-bit MAC address, otherwise as a 64-bit MAC address. See example in {{rfc7925-prof}}.
   * Otherwise, it is encoded as a CBOR text string.
 
-The final encoding of the extension value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
+The final encoding of the attribute value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
 
 In natively signed C509 certificates, bytes and tag 48 do not correspond to any predefined text string encoding and may also be used for other attribute types.
 
@@ -386,7 +386,7 @@ The 'extensions' field is encoded either as a CBOR array or as a CBOR int. An om
 
 Each 'extensionID' in the CBOR array is encoded either as a CBOR int (see {{extype}}) or as an unwrapped CBOR OID tag {{RFC9090}}.
 
-* If 'extensionID' is encoded as a CBOR int, it is followed by a CBOR item of any type except undefined (see {{CRT}}), and the sign of the int is used to encode if the extension is critical: Critical extensions are encoded with a negative sign and non-critical extensions are encoded with a positive sign. If the CBOR array contains exactly two ints and the absolute value of the first int is 2 (corresponding to keyUsage, see {{ext-encoding}}), the CBOR array is omitted and the extensions is encoded as a single CBOR int with the absolute value of the second int and the sign of the first int.
+* If 'extensionID' is encoded as a CBOR int, it is followed by a CBOR item of any type except undefined (see {{CRT}}), and the sign of the int is used to encode if the extension is critical: Critical extensions are encoded with a negative sign and non-critical extensions are encoded with a positive sign. If the CBOR array contains exactly two ints and the absolute value of the first int is 2 (corresponding to keyUsage, see {{ext-encoding}}), the CBOR array is omitted and the 'extensions' field is encoded as a single CBOR int with the absolute value of the second int and the sign of the first int.
 
 * If extensionID is encoded as an unwrapped CBOR OID tag, it is followed by the DER-encoded extnValue encoded in the following way:
   - if the extension is non-critical, the extnValue OCTET STRING value field is encoded as a CBOR byte string;
@@ -404,7 +404,7 @@ The 'signatureAlgorithm' field is always the same as the 'signature' field and t
 
 ### signatureValue
 
-In general, the 'signatureValue' BIT STRING value field is encoded as the CBOR byte string issuerSignatureValue. This specification assumes that the BIT STRING has zero unused bits, and the unused bits byte is omitted. For natively signed C509 certificates, the signatureValue is calculated over the CBOR sequence TBSCertificate. For ECDSA, the encoding of issuerSignatureValue is further optimized as described in {{alg-encoding}}
+In general, the 'signatureValue' BIT STRING value field is encoded as the CBOR byte string issuerSignatureValue. This specification assumes that the BIT STRING has zero unused bits, and the unused bits byte is omitted. For natively signed C509 certificates, the signatureValue is calculated over the CBOR sequence TBSCertificate. For ECDSA, the encoding of issuerSignatureValue is further optimized as described in {{alg-encoding}}.
 
 
 ## Encoding of subjectPublicKey and issuerSignatureValue {#alg-encoding}
@@ -638,7 +638,7 @@ RDNAttributes = (
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
 
-* AS Identifiers (id-pe-autonomousSysIds). The X.509 extension AS Identifiers is specified in {{RFC3779}}. If rdi is not present, the extension value can be CBOR-encoded. Each ASId is encoded as a CBOR uint. With the exception of the first ASId, each subsequent ASId is encoded as the difference from the previous ASId.
+* AS Identifiers (id-pe-autonomousSysIds). The X.509 extension AS Identifiers is specified in {{RFC3779}}. If 'rdi' is not present, the extension value can be CBOR-encoded. Each ASId is encoded as a CBOR uint. With the exception of the first ASId, each subsequent ASId is encoded as the difference from the previous ASId.
 
 ~~~~~~~~~~~ cddl
    ASIdOrRange = uint / [min:uint, max:uint]
@@ -681,7 +681,7 @@ C509CertData = bytes .cborseq C509Certificate
 
 C509CertData thus includes the unwrapped CBOR sequence, ~C509Certificate. The byte string encoding includes the length of each certificate which simplifies parsing. See {{other-examples}} for an example.
 
-The COSE_C509 item has media type application/cose-c509-cert, see {{c509-cert}}. Different  CoAP Content-Formats are defined depending on "usage" = "chain" or not, see {{content-format}}.  Stored file formats are defined for the cases with/without ("usage" = "chain") with "magic numbers" TBD8/TBD6 using the reserved CBOR tag 55799 and the corresponding Content-Formats TBD15/TBD3, enveloped as described in {{Section 2.2 of RFC9277}}.
+The COSE_C509 item has media type application/cose-c509-cert, see {{c509-cert}}. Different CoAP Content-Formats are defined depending on "usage" = "chain" or not, see {{content-format}}.  Stored file formats are defined for the cases with/without ("usage" = "chain") with "magic numbers" TBD8/TBD6 using the reserved CBOR tag 55799 and the corresponding Content-Formats TBD15/TBD3, enveloped as described in {{Section 2.2 of RFC9277}}.
 
 The value type of c5t is the COSE_CertHash structure defined in {{RFC9360}}, which contains the hash value of the C509 certificate calculated over ~C509Certificate. Thus C509CertData contains all data necessary to calculate the thumbprint c5t.
 
@@ -749,7 +749,7 @@ Although this specification requires the use of Deterministically Encoded CBOR (
 
 Where both a specific and a generic CBOR encoding are supported, the specific CBOR encoding MUST be used. For example, when a specific CBOR encoding of an extension is defined in {{ext-encoding}} and the C509 Extensions Registry, that specific encoding MUST be used. In particular, when a specific otherName encoding is available, identified by a negative integer value in the C509 General Names Registry, it MUST be used.
 
-Native C509 certificates MUST use only specific CBOR-encoded fields. However, when decoding a non-native C509 certificate, the decoder may need to support, for example, the (extensionID: ~oid, extensionValue: bytes / [bytes]) encoding of an extension for which an (extensionID: int, extensionValue: Defined) encoding exists. One reason is that the certificate might have been issued before the specific CBOR extension was registered.
+Native C509 certificates MUST use only specific CBOR-encoded fields. However, when decoding non-native C509 certificatea, the decoder may need to support, for example, the (extensionID: ~oid, extensionValue: bytes / [bytes]) encoding of an extension for which an (extensionID: int, extensionValue: Defined) encoding exists. One reason is that the certificate might have been issued before the specific CBOR extension was registered.
 
 ## C509 Name in TLS and DTLS
 
@@ -827,7 +827,7 @@ MessageDigest = bytes
 
 DhSigStaticType = [
   issuer: Name,
-  serialNumber: CertificateSerialNumber
+  serialNumber: CertificateSerialNumber,
   hashValue: MessageDigest
 ]
 ~~~~~~~~~~~
