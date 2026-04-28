@@ -352,7 +352,7 @@ The text strings are further optimized as follows:
   * If the text string contains an EUI-64 of the form "HH-HH-HH-HH-HH-HH-HH-HH" where each 'H' is one of the symbols '0'-'9' or 'A'-'F', it is encoded as a CBOR tagged MAC address using the CBOR tag 48, see {{Section 2.4 of RFC9542}}. If of the form "HH-HH-HH-FF-FE-HH-HH-HH", it is encoded as a 48-bit MAC address, otherwise as a 64-bit MAC address. See example in {{rfc7925-prof}}.
   * Otherwise, it is encoded as a CBOR text string.
 
-The final encoding of the extension value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
+The final encoding of the attribute value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
 
 In natively signed C509 certificates, bytes and tag 48 do not correspond to any predefined text string encoding and may also be used for other attribute types.
 
@@ -364,7 +364,7 @@ The 'notBefore' and 'notAfter' fields are encoded as unwrapped CBOR epoch-based 
 
 ### subject {#subject}
 
-The 'subject' field is encoded exactly like issuer, except that the CBOR simple value is not a valid value.
+The 'subject' field is encoded exactly like issuer, except that the CBOR simple value null is not a valid value.
 
 ### subjectPublicKeyInfo
 
@@ -914,7 +914,7 @@ Different types of Certification Request Templates can be defined (see {{temp-ty
 
 The presence of a Defined (non-undefined) value in a C509CertificationRequestTemplate indicates that the server expects the client to use that value in the certification request. If multiple AlgorithmIdentifier or c509CertificationRequestType values are present, the server expects the client to select one of them for use in the Certification Request. The presence of an undefined value indicates that the client is expected to provide an appropriate value for that field. For example, if the server includes a subjectAltName with a GeneralNameType iPAddress and a GeneralNameValue empty byte string, this means that the client SHOULD fill in a corresponding GeneralNameValue.
 
-For AttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal shall not be less than minimal, and maximal shall be positive. Negative attributeType is not allowed.
+For RDNAttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal shall not be less than minimal, and maximal shall be positive. Negative attributeType is not allowed.
 
 For ExtensionTemplate, the field "optional" specifies whether an extension of the given extensionID is optional. Negative extensionID is not allowed.
 
@@ -1338,7 +1338,7 @@ IANA has created a new registry titled "C509 Extensions" under the new registry 
 |       | OID:             2.5.29.15                                |
 |       | DER:             06 03 55 1D 0F                           |
 |       | Comments:        RFC 5280                                 |
-|       | AttributeValue:  KeyUsage                                 |
+|       | extensionValue:  KeyUsage                                 |
 +-------+-----------------------------------------------------------+
 |     3 | Name:            Subject Alternative Name                 |
 |       | Identifiers:     subjectAltName                           |
