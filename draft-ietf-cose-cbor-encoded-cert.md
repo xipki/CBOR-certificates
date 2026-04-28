@@ -1078,7 +1078,7 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 |       | subjectPrivateKey: COSE_Key                               |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-privkeys title="C509 Private Key Types"}
+{: #fig-rivkeys title="C509 Private Key Types"}
 {: artwork-align="center"}
 
 ## C509 Certification Request Templates Types Registry {#temp-type}
