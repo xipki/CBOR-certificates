@@ -1069,7 +1069,7 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | Private Key Types                                         |
+| Value | Private Key                                               |
 +=======+===========================================================+
 |     0 | Comments:          Asymmetric Key Package (RFC 5958)      |
 |       | subjectPrivateKey: bytes                                  |
@@ -1078,7 +1078,7 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 |       | subjectPrivateKey: COSE_Key                               |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-rivkeys title="C509 Private Key Types"}
+{: #fig-privkeys title="C509 Private Key Types"}
 {: artwork-align="center"}
 
 ## C509 Certification Request Templates Types Registry {#temp-type}
@@ -1656,7 +1656,7 @@ IANA has created a new registry titled "C509 Policies Qualifiers" under the regi
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | Certificate Policy                                        |
+| Value | Policy Qualifier                                          |
 +=======+===========================================================+
 |     1 | Name:            Certification Practice Statement         |
 |       | Identifiers:     id-qt-cps, cps                           |
@@ -1847,7 +1847,7 @@ IANA has created a new registry titled "C509 General Names" under the registry g
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | General Names                                             |
+| Value | General Name                                              |
 +=======+===========================================================+
 |    -3 | Name:            otherName with MACAddress                |
 |       | Comments:        TBD92(Use RFC I-D-lamps-macaddress-on)   |
@@ -1910,7 +1910,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | X.509 Signature Algorithms                                |
+| Value | Signature Algorithm                                       |
 +=======+===========================================================+
 |  -256 | Name:        RSASSA-PKCS1-v1_5 with SHA-1                 |
 |       | Identifiers: sha1-with-rsa-signature,                     |
@@ -2096,7 +2096,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | X.509 Public Key Algorithms                               |
+| Value | Public Key Algorithm.                                     |
 +=======+===========================================================+
 |     0 | Name:        RSA                                          |
 |       | Identifiers: rsaEncryption                                |
