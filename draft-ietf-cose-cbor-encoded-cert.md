@@ -1083,7 +1083,7 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 
 ## C509 Certification Request Templates Types Registry {#temp-type}
 
-IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review" and "Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
