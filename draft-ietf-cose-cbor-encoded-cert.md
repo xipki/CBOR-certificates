@@ -534,6 +534,11 @@ CBOR encoding of the following extension values is fully supported:
 
 * TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
+~~~~~~~~~~~ cddl
+   TLSFeatures = [* feature: uint]
+~~~~~~~~~~~
+{: sourcecode-name="c509.cddl"}
+
 CBOR encoding of the following extension values are partly supported:
 
 * Subject Alternative Name (subjectAltName). If the subject alternative name only contains general names registered in {{GN}} the extension value can be CBOR encoded. extensionValue is encoded as an array of (int, any) pairs where each pair encodes a general name (see {{GN}}). If subjectAltName contains exactly one dNSName, the array and the int are omitted and extensionValue is the dNSName encoded as a CBOR text string. In addition to the general names defined in {{RFC5280}}, the otherName with type-id id-on-hardwareModuleName, id-on-SmtpUTF8Mailbox and id-on-MACAddress have been given their own ints; such otherName are encoded as follows:
@@ -647,11 +652,6 @@ RDNAttributes = (
 {: sourcecode-name="c509.cddl"}
 
 * AS Identifiers v2 (id-pe-autonomousSysIds-v2). The X.509 extension AS Identifiers v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "AS Identifiers".
-
-~~~~~~~~~~~ cddl
-   TLSFeatures = [* feature: uint]
-~~~~~~~~~~~
-{: sourcecode-name="c509.cddl"}
 
 ### Example Encoding of Extensions
 
