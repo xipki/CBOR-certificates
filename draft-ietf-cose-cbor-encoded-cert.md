@@ -564,9 +564,9 @@ CBOR encoding of the following extension values are partly supported:
 
 ~~~~~~~~~~~ cddl
    DistributionPointName = [
-     fullName  [ 2 * text ] / text,
-     reasons   uint / null,
-     cRLIssuer Name / null,
+     fullName:  [ 2 * text ] / text,
+     reasons:   uint / null,
+     cRLIssuer: Name / null,
    ]
 
    CRLDistributionPoints = [ + DistributionPointName ] / text
@@ -601,7 +601,7 @@ CBOR encoding of the following extension values are partly supported:
    KeyIdentifierArray = [
      keyIdentifier: KeyIdentifier,
      authorityCertIssuer: GeneralNames,
-     authorityCertSerialNumber: CertificateSerialNumber
+     authorityCertSerialNumber: CertificateSerialNumber,
    ]
    AuthorityKeyIdentifier = KeyIdentifierArray / KeyIdentifier
 ~~~~~~~~~~~
@@ -829,8 +829,8 @@ MessageDigest = bytes
 
 DhSigStaticType = [
   issuer: Name,
-  serialNumber: CertificateSerialNumber
-  hashValue: MessageDigest
+  serialNumber: CertificateSerialNumber,
+  hashValue: MessageDigest,
 ]
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
@@ -867,7 +867,7 @@ PrivateKeyPossessionStatement = [
   cert: C509Certificate / null,
 ]
 ~~~~~~~~~~~
-
+{: sourcecode-name="c509.cddl"}
 
 ## Certification Request Template {#CRT}
 
