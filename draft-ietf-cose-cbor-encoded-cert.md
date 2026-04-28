@@ -158,7 +158,7 @@ informative:
     date: January 2025
 
   GSMA-SGP.22:
-    title: GSMA RSP Technial Specification Version 3.1 Final
+    title: GSMA RSP Technical Specification Version 3.1 Final
     target: https://www.gsma.com/solutions-and-impact/technologies/esim/wp-content/uploads/2023/12/SGP.22-v3.1.pdf
     date: December 2023
 
@@ -225,7 +225,7 @@ This document specifies a CBOR encoding of X.509 certificates. The resulting cer
 
 Two types of C509 certificates are defined. One type is an invertible CBOR re-encoding of DER-encoded X.509 certificates with the signature field copied from the DER encoding. The other type is identical except that the signature is over the CBOR encoding instead of the DER encoding, avoiding the use of ASN.1. Both types of certificates have the same semantics as X.509 and the same reduced size compared to X.509.
 
-The document also specifies CBOR encoded data structures for certificate (signing) requests and certification request templates, new COSE headers, as well as a TLS certificate type and a file format for C509. This document updates RFC 6698; the TLSA selectors registry is extended to include C509 certificates.
+This document also specifies CBOR encoded data structures for certificationg requests and certification request templates, new COSE headers, as well as a TLS certificate type and a file format for C509. This document updates RFC 6698; the TLSA selectors registry is extended to include C509 certificates.
 
 --- middle
 
@@ -233,7 +233,7 @@ The document also specifies CBOR encoded data structures for certificate (signin
 
 One of the challenges with deploying a Public Key Infrastructure (PKI) for the Internet of Things (IoT) is the size and parsing of X.509 public key certificates {{RFC5280}}, since those are not optimized for constrained environments {{RFC7228}}. Large certificate chains are also problematic in non-constrained protocols such as EAP-TLS {{RFC9190}} {{RFC9191}} where authenticators typically drop an EAP session after only 40–50 round-trips, QUIC {{RFC9000}} where the latency increases significantly unless the server sends less than three times as many bytes as received prior to validating the client address, and Resource Public Key Infrastructure (RPKI) {{RFC6487}} where a single certificate can be very large. More compact certificate representations are, therefore, desirable in many use cases.
 
-X.509 certificates are defined with Abstract Syntax Notation One (ASN.1) and encoded using the Distinguished Encoding Rules (DER) {{X.690}}. This document specifies an alternative encoding of X.509 certificates, using the Concise Binary Object Representation (CBOR) {{RFC8949}}, initially proposed in {{X.509-IoT}}. The use of a more compact encoding  reduces the certificate size, which has known performance benefits in terms of decreased communication overhead, power consumption, latency, storage, etc. The re-encoding of X.509 is called C509 and the resulting certificates are termed C509 certificates. C509 is not a general CBOR encoding for ASN.1 data structures.
+X.509 certificates are defined with Abstract Syntax Notation One (ASN.1) and encoded using the Distinguished Encoding Rules (DER) {{X.690}}. This document specifies an alternative encoding of X.509 certificates, using the Concise Binary Object Representation (CBOR) {{RFC8949}}, initially proposed in {{X.509-IoT}}. The use of a more compact encoding reduces the certificate size, which has known performance benefits in terms of decreased communication overhead, power consumption, latency, storage, etc. The re-encoding of X.509 is called C509 and the resulting certificates are termed C509 certificates. C509 is not a general CBOR encoding for ASN.1 data structures.
 
 CBOR is a data format designed for small code size and small message size to support systems with very limited memory, processor power, and instruction sets. CBOR builds on the JSON data model but extends it by, e.g., encoding binary data directly without base64 conversion. In addition to the binary CBOR encoding, CBOR also has a diagnostic notation that is readable and editable by humans, simplifying development and debugging. The Concise Data Definition Language (CDDL) {{RFC8610}} provides a way to express structures for protocol messages and APIs that use CBOR. {{RFC8610}} also extends the diagnostic notation. For a complete specification and examples, see {{RFC8949}}, {{RFC8610}}, and {{RFC8742}}. Implementors can get familiar with CBOR by using the CBOR playground {{CborMe}}.
 
@@ -249,7 +249,7 @@ This document defines two types of C509 using the same CBOR encoding and differi
 
 1. An invertible CBOR re-encoding of DER-encoded X.509 certificates {{RFC5280}}, which can be reversed to obtain the original DER-encoded X.509 certificate. Due to the widespread deployment of X.509, it is necessary to allow backward compatibility.
 
-2. Natively signed C509 certificates, where the signature is calculated over the CBOR encoding instead of over the DER encoding. This removes the need for ASN.1 and DER parsing and the associated complexity but they are not backwards compatible with implementations requiring DER-encoded X.509.
+2. Natively signed C509 certificates, where the signature is calculated over the CBOR encoding instead of over the DER encoding. This removes the need for ASN.1 and DER parsing and the associated complexity but they are not backward compatible with implementations requiring DER-encoded X.509.
 
 Natively signed C509 certificates can be applied in devices that are only required to authenticate to natively signed C509 certificate compatible servers, which is not a major restriction for many IoT deployments where the parties issuing and verifying certificates can be a restricted ecosystem.
 
@@ -265,7 +265,7 @@ This specification makes use of the terminology in {{RFC2986}}, {{RFC5280}}, {{R
 
 This section specifies the content and encoding for C509 certificates, with the overall objective to produce a very compact representation supporting large parts of {{RFC5280}}, and everything in {{RFC7925}}, {{IEEE-802.1AR}}, RPKI {{RFC6487}}, GSMA eUICC {{GSMA-eUICC}}, and CAB Baseline {{CAB-TLS}} {{CAB-Code}}.
 
-In the CBOR encoding, static fields are elided, elliptic curve points and time values are compressed, OID are replaced with short integers or complemented with CBOR OID encoding {{RFC9090}}, and redundant encoding is removed. Combining these different components reduces the certificate size significantly, which is not possible with general purpose compression algorithms, see {{fig-size-TLS}}.
+In the CBOR encoding, static fields are elided, elliptic curve points and time values are compressed, OIDs are replaced with short integers or complemented with CBOR OID encoding {{RFC9090}}, and redundant encoding is removed. Combining these different components reduces the certificate size significantly, which is not possible with general purpose compression algorithms, see {{fig-size-TLS}}.
 
 The C509 certificate can be either a CBOR re-encoding of a DER-encoded X.509 certificate, in which case the signature is calculated on the DER-encoded ASN.1 data in the X.509 certificate, or a natively signed C509 certificate, in which case the signature is calculated directly on the CBOR encoded data. In both cases the certificate content is adhering to the restrictions given by {{RFC5280}}. The re-encoding is known to work with DER-encoded certificates but might work with other canonical encodings. The re-encoding does not work for BER encoded certificates.
 
@@ -386,7 +386,7 @@ The 'extensions' field is encoded either as a CBOR array or as a CBOR int. An om
 
 Each 'extensionID' in the CBOR array is encoded either as a CBOR int (see {{extype}}) or as an unwrapped CBOR OID tag {{RFC9090}}.
 
-* If 'extensionID' is encoded as a CBOR int, it is followed by a CBOR item of any type except undefined (see {{CRT}}), and the sign of the int is used to encode if the extension is critical: Critical extensions are encoded with a negative sign and non-critical extensions are encoded with a positive sign. If the CBOR array contains exactly two ints and the absolute value of the first int is 2 (corresponding to keyUsage, see {{ext-encoding}}), the CBOR array is omitted and the extensions is encoded as a single CBOR int with the absolute value of the second int and the sign of the first int.
+* If 'extensionID' is encoded as a CBOR int, it is followed by a CBOR item of any type except undefined (see {{CRT}}), and the sign of the int is used to encode if the extension is critical: Critical extensions are encoded with a negative sign and non-critical extensions are encoded with a positive sign. If the CBOR array contains exactly two ints and the absolute value of the first int is 2 (corresponding to keyUsage, see {{ext-encoding}}), the CBOR array is omitted and the 'extensions' field is encoded as a single CBOR int with the absolute value of the second int and the sign of the first int.
 
 * If extensionID is encoded as an unwrapped CBOR OID tag, it is followed by the DER-encoded extnValue encoded in the following way:
   - if the extension is non-critical, the extnValue OCTET STRING value field is encoded as a CBOR byte string;
@@ -404,7 +404,7 @@ The 'signatureAlgorithm' field is always the same as the 'signature' field and t
 
 ### signatureValue
 
-In general, the 'signatureValue' BIT STRING value field is encoded as the CBOR byte string issuerSignatureValue. This specification assumes that the BIT STRING has zero unused bits, and the unused bits byte is omitted. For natively signed C509 certificates, the signatureValue is calculated over the CBOR sequence TBSCertificate. For ECDSA, the encoding of issuerSignatureValue is further optimized as described in {{alg-encoding}}
+In general, the 'signatureValue' BIT STRING value field is encoded as the CBOR byte string issuerSignatureValue. This specification assumes that the BIT STRING has zero unused bits, and the unused bits byte is omitted. For natively signed C509 certificates, the signatureValue is calculated over the CBOR sequence TBSCertificate. For ECDSA, the encoding of issuerSignatureValue is further optimized as described in {{alg-encoding}}.
 
 
 ## Encoding of subjectPublicKey and issuerSignatureValue {#alg-encoding}
@@ -811,7 +811,7 @@ The C509 Certification Request can either be an invertible CBOR re-encoding of a
 * c509CertificationRequestType = 2. This type indicates that the C509 Certification Request is natively signed, i.e., that subjectSignatureValue contains the signature over the CBOR Sequence
 TBSCertificationRequest, see {{fig-C509CSRCDDL}}. This encoding removes the need for ASN.1 and DER parsing, and re-encoding in the requesting party.
 
-* c509CertificationRequestType = 3. This type indicates that the C509 Certification Request is a CBOR re-encoded {{RFC2986}} certification request, as defined in {{CSR}}. This encoding is backwards compatible with legacy RFC 2986 certification requests, and enables a reduced transport overhead.
+* c509CertificationRequestType = 3. This type indicates that the C509 Certification Request is a CBOR re-encoded {{RFC2986}} certification request, as defined in {{CSR}}. This encoding is backward compatible with legacy RFC 2986 certification requests, and enables a reduced transport overhead.
 
 The type of certificate issued after the request is decided by the application. The default type of issued certificate in case of C509 is that c509CertificateType = c509CertificationRequestType.
 
@@ -1008,7 +1008,7 @@ The mechanism in this document does not reveal any additional information compar
 
 Any issues with decoding or parsing a C509 certificate should be handled exactly as how such errors would be handled for the corresponding X.509 certificate. For example, a non-critical extension MAY be ignored if it is not recognized, see {{Section 4.2 of RFC5280}}.
 
-As stated in {{cose-header-params}}, the contents of the COSE Header Parameters c5b, c5c, c5t, c5u is untrusted input that potentially may be verified using existing trust anchors or other trust establishment mechanism out of scope of this document. Similar security considerations as x5bag, x5chain, x5t and x5u applies, see {{RFC9360}}. Security considerations of the COSE protected and unprotected headers is discussed in {{RFC9052}}.
+As stated in {{cose-header-params}}, the contents of the COSE Header Parameters c5b, c5c, c5t, c5u is untrusted input that potentially may be verified using existing trust anchors or other trust establishment mechanism out of scope of this document. Similar security considerations as x5bag, x5chain, x5t and x5u applies, see {{RFC9360}}. Security considerations of the COSE protected and unprotected headers are discussed in {{RFC9052}}.
 
 
 # IANA Considerations {#iana}
@@ -1065,7 +1065,7 @@ IANA has created a new registry titled "C509 Certification Request Types" under 
 
 ## C509 Private Key Types Registry {#privkeys}
 
-IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, and subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
+IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -2592,7 +2592,7 @@ This document regists the following entry in the "SMI Security for PKIX Relative
 
 ## Example: RFC 7925 profiled X.509 Certificate {#rfc7925-prof}
 
-Example of {{RFC7925}} profiled X.509 certificate parsed with OpenSSL.
+Example of an {{RFC7925}} profiled X.509 certificate parsed with OpenSSL.
 
 ~~~~~~~~~~~
 Certificate:
@@ -2766,7 +2766,7 @@ h'D718111F3F9BD91B92FF6877F386BDBFCEA7154268FD7F2FB56EE17D99EA16D4'
 
 ### Examples: C509Certificate and C509CertData {#other-examples}
 
-This section examplifies other CBOR objects defined in this specification, based on the natively signed C509 certificate in {{example-native}}.
+This section exemplifies other CBOR objects defined in this specification, based on the natively signed C509 certificate in {{example-native}}.
 
 {{fig-C509Certificate}} shows the encoding of the corresponding C509Certificate, i.e., the CBOR array wrapping of the CBOR sequence ~C509Certificate, see {{message-fields}}.
 
