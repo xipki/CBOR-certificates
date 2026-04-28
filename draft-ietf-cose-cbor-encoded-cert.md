@@ -225,7 +225,7 @@ This document specifies a CBOR encoding of X.509 certificates. The resulting cer
 
 Two types of C509 certificates are defined. One type is an invertible CBOR re-encoding of DER-encoded X.509 certificates with the signature field copied from the DER encoding. The other type is identical except that the signature is over the CBOR encoding instead of the DER encoding, avoiding the use of ASN.1. Both types of certificates have the same semantics as X.509 and the same reduced size compared to X.509.
 
-This document also specifies CBOR encoded data structures for certificationg requests and certification request templates, new COSE headers, as well as a TLS certificate type and a file format for C509. This document updates RFC 6698; the TLSA selectors registry is extended to include C509 certificates.
+This document also specifies CBOR encoded data structures for certification requests and certification request templates, new COSE headers, as well as a TLS certificate type and a file format for C509. This document updates RFC 6698; the TLSA selectors registry is extended to include C509 certificates.
 
 --- middle
 
