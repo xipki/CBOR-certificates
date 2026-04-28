@@ -2366,7 +2366,7 @@ Subtype name: cose-c509-privkey
 
 Required parameters: N/A
 
-Optional parameters:
+Optional parameters: N/A
 
 Encoding considerations: binary
 
@@ -2406,7 +2406,7 @@ Subtype name: cose-c509-pem
 
 Required parameters: N/A
 
-Optional parameters:
+Optional parameters: N/A
 
 Encoding considerations: binary
 
@@ -2502,7 +2502,7 @@ IANA is requested to add entries for "application/cbor" to the "CoAP Content-For
 +----------------------+---------+-----------+-------+------------+
 | application/         |         | [[link    |       | [[this     |
 | cose-c509-cert;      | -       | to 8.18]] | TBD15 | document]] |
-| usage = chain        |         |           |       |            |
+| usage=chain          |         |           |       |            |
 +----------------------+---------+-----------+-------+------------+
 | application/         | -       | [[link    | TBD4  | [[this     |
 | cose-c509-pkcs10     |         | to 8.18]] |       | document]] |
@@ -2521,7 +2521,7 @@ IANA is requested to add entries for "application/cbor" to the "CoAP Content-For
 +----------------------+---------+-----------+-------+------------+
 | application/         |         | [[link    |       | [[this     |
 | cose-certhash;       | -       | to 8.18]] | TBD17 | document]] |
-| usage = c509         |         |           |       |            |
+| usage=c509           |         |           |       |            |
 +----------------------+---------+-----------+-------+------------+
 ~~~~~~~~~~~
 {: #fig-format-ids title="CoAP Content-Format IDs"}
