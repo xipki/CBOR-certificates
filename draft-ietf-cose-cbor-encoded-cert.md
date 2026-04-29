@@ -2096,7 +2096,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
-| Value | Public Key Algorithm.                                     |
+| Value | Public Key Algorithm                                      |
 +=======+===========================================================+
 |     0 | Name:        RSA                                          |
 |       | Identifiers: rsaEncryption                                |
