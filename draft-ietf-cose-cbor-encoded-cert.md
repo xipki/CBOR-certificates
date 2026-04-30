@@ -1003,13 +1003,13 @@ The use of natively signed C509 certificates removes the need for ASN.1 encoding
 
 Conversion between the certificate formats can be made in constant time to reduce risk of information leakage through side channels.
 
-
 The mechanism in this document does not reveal any additional information compared to X.509. Because of the difference in size, it will be possible to detect that this profile is used. The gateway solution described in {{dep-set}} requires unencrypted certificates and is not recommended.
 
 Any issues with decoding or parsing a C509 certificate should be handled exactly as how such errors would be handled for the corresponding X.509 certificate. For example, a non-critical extension MAY be ignored if it is not recognized, see {{Section 4.2 of RFC5280}}.
 
 As stated in {{cose-header-params}}, the contents of the COSE Header Parameters c5b, c5c, c5t, c5u is untrusted input that potentially may be verified using existing trust anchors or other trust establishment mechanism out of scope of this document. Similar security considerations as x5bag, x5chain, x5t and x5u applies, see {{RFC9360}}. Security considerations of the COSE protected and unprotected headers are discussed in {{RFC9052}}.
 
+The specification makes no recommendations on the use of algorithms, paddings, or other security constructs applied in the encoding of a certificate. In particular, an IANA registration does not imply a recommendation. For example, some deprecated algorithms are assigned code points only for backwards compatibility to enable CBOR encoding of existing certificates.
 
 # IANA Considerations {#iana}
 
@@ -1065,7 +1065,7 @@ IANA has created a new registry titled "C509 Certification Request Types" under 
 
 ## C509 Private Key Types Registry {#privkeys}
 
-IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. The subjectPrivateKey describes the encoding of the subject private key, see examples in {{private-key-structures}}. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
+IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. The subjectPrivateKey describes the encoding of the subject private key, see {{private-key-structures}}. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1097,7 +1097,7 @@ IANA has created a new registry titled "C509 Certification Request Templates Typ
 
 ## C509 RDN Attributes Registry {#rdnatttype}
 
-IANA has created a new registry titled "C509 RDN Attributes" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments and Reference, where Value is a non-negative integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[0, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions. If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
+IANA has created a new registry titled "C509 RDN Attributes" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments and Reference, where Value is a non-negative integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For RDN Attributes specified only for CBOR encoding where no OID is defined, the OID and DER fields are marked "N/A". If there is an OID defined, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the attribute is described. For values in the interval \[0, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions.
 
 The initial contents of the registry are:
 
@@ -1285,7 +1285,7 @@ The initial contents of the registry are:
 
 ## C509 CR Attributes Registry {#cratttype}
 
-IANA has created a new registry titled "C509 CR Attributes" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, attributeValue, and Reference, where Value is an integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions. If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}.
+IANA has created a new registry titled "C509 CR Attributes" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, attributeValue, and Reference, where Value is an integer, and the other columns are text strings. Name and Identifiers are informal descriptions. The fields Name, OID, and DER are mandatory. If OID is present, the OID is given in dotted decimal representation, and the DER column contains the hex string of the DER-encoded OID {{X.690}}. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the attribute is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". Name and Identifiers are informal descriptions.
 
 The initial contents of the registry are:
 
@@ -1320,7 +1320,9 @@ The initial contents of the registry are:
 
 ## C509 Extensions Registry {#extype}
 
-IANA has created a new registry titled "C509 Extensions" under the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, extensionValue, and Reference, where Value is a positive integer, and the other columns are text strings. The fields Name, OID, DER, and extensionValue are mandatory. For values in the interval \[1, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Extensions" under the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, extensionValue, and Reference, where Value is a positive integer, and the other columns are text strings. The fields Name, OID, DER, and extensionValue are mandatory. For all other values the registration procedure is "Expert Review". If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the extension is described. For values in the interval \[1, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use.
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1493,7 +1495,9 @@ IANA has created a new registry titled "C509 Extensions" under the new registry 
 
 ## C509 Certificate Policies Registry {#CP}
 
-IANA has created a new registry titled "C509 Certificate Policies" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Certificate Policies" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For all other values the registration procedure is "Expert Review". If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the policy is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use.
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1652,7 +1656,9 @@ IANA has created a new registry titled "C509 Certificate Policies" under the reg
 
 ## C509 Policies Qualifiers Registry {#PQ}
 
-IANA has created a new registry titled "C509 Policies Qualifiers" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Policies Qualifiers" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the policy qualifier is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review".
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1676,7 +1682,10 @@ IANA has created a new registry titled "C509 Policies Qualifiers" under the regi
 
 ## C509 Information Access Registry {#IA}
 
-IANA has created a new registry titled "C509 Information Access" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Information Access" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory.  If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the information access is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".
+
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1730,7 +1739,9 @@ IANA has created a new registry titled "C509 Information Access" under the regis
 
 ## C509 Extended Key Usages Registry {#EKU}
 
-IANA has created a new registry titled "C509 Extended Key Usages" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Extended Key Usages" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, and DER are mandatory. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the extended key usage is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". Values {{{≥}}} 32768 are reserved for Private Use. For all other values the registration procedure is "Expert Review".
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+---------------------------------------------------------+
@@ -1843,7 +1854,10 @@ IANA has created a new registry titled "C509 Extended Key Usages" under the regi
 {: artwork-align="center"}
 
 ## C509 General Names Registry {#GN}
-IANA has created a new registry titled "C509 General Names" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Comments, GeneralNameValue, and Reference, where Value is an integer, and the other columns are text strings. The fields Name and GeneralNameValue are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 General Names" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Comments, GeneralNameValue, and Reference, where Value is an integer, and the other columns are text strings. The fields Name and GeneralNameValue are mandatory. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the name is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". 
+
+
+The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1904,7 +1918,7 @@ IANA has created a new registry titled "C509 General Names" under the registry g
 
 ## C509 Signature Algorithms Registry {#sigalg}
 
-IANA has created a new registry titled "C509 Signature Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The registry includes both signature algorithms and non-signature proof-of-possession algorithms. The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. Alignment with the value of public key algorithm must be considered, see instruction in {{pkalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Signature Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The registry includes both signature algorithms and non-signature proof-of-possession algorithms. The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. Alignment with the value of public key algorithm must be considered, see instruction in {{pkalg}}.  If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the algorithm is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 <!-- NOTE: Check referenced section number hardcoded in the table. -->
 
@@ -1919,14 +1933,14 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 |       | OID:         1.2.840.113549.1.1.5                         |
 |       | Parameters:  NULL                                         |
 |       | DER:         30 0D 06 09 2A 86 48 86 F7 0D 01 01 05 05 00 |
-|       | Comments:    Don't use                                    |
+|       | Comments:                                                 |
 +-------+-----------------------------------------------------------+
 |  -255 | Name:        ECDSA with SHA-1                             |
 |       | Identifiers: ecdsa-with-SHA1                              |
 |       | OID:         1.2.840.10045.4.1                            |
 |       | Parameters:  Absent                                       |
 |       | DER:         30 09 06 07 2A 86 48 CE 3D 04 01             |
-|       | Comments:    Don't use. See Section 3.2.2.                |
+|       | Comments:    See Section 3.2.2.                           |
 +-------+-----------------------------------------------------------+
 |     0 | Name:        ECDSA with SHA-256                           |
 |       | Identifiers: ecdsa-with-SHA256                            |
@@ -2092,7 +2106,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 
 ## C509 Public Key Algorithms Registry {#pkalg}
 
-IANA has created a new registry titled "C509 Public Key Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. If the public key can only be used with one signature algorithm and the OID of the public key algorithm is the same as the signature algorithm, then the value must be chosen equal to the value of signature algorithm, see {{sigalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Public Key Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. If the public key can only be used with one signature algorithm and the OID of the public key algorithm is the same as the signature algorithm, then the value must be chosen equal to the value of signature algorithm, see {{sigalg}}. If it is not expected to be understood from the other information (e.g. the OID), then the Comments field must contain a reference to where the algorithm is described. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
