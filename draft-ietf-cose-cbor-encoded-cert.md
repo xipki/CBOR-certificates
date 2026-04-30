@@ -1072,10 +1072,11 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 | Value | Private Key                                               |
 +=======+===========================================================+
 |     0 | Comments:          Asymmetric Key Package (RFC 5958)      |
-|       | subjectPrivateKey: bytes                                  |
+|       | subjectPrivateKey: PrivateKey OCTET STRING encoded as     |
+|       | CBOR byte string                                          |
 +-------+-----------------------------------------------------------+
 |     1 | Comments:          COSE Key Object (RFC 9052)             |
-|       | subjectPrivateKey: COSE_Key                               |
+|       | subjectPrivateKey: COSE_Key containing a private key      |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
 {: #fig-privkeys title="C509 Private Key Types"}
