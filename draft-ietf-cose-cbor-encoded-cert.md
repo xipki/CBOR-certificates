@@ -343,7 +343,7 @@ The 'signature' field, containing the signature algorithm including parameters, 
 
 In the general case, the sequence of 'RDNAttribute' is encoded as a CBOR array consisting of RDNAttribute elements. RelativeDistinguishedName with more than one AttributeTypeAndValue is not supported. Each RDNAttribute is CBOR encoded as (type, value) either as a (int, SpecialText) pair, or a (~oid, bytes) tuple.
 
-In the former case, the absolute value of the int encodes the attribute type (see {{fig-attrtype}}) and the sign is used to represent the character string type in the X.509 certificate; positive for utf8String, negative for printableString. Attribute values which are always of type IA5String are unambiguously represented using a non-negative int. Examples include emailAddress and domainComponent (see {{RFC5280}}). In CBOR, all text strings are UTF-8 encoded and in natively signed C509 certificates all CBOR ints SHALL be non-negative. Text strings SHALL still adhere to any {{RFC5280}} restrictions. serialNumber SHALL only contain the 74-character subset of ASCII allowed by printableString and countryName SHALL have length 2. CBOR encoding is allowed for IA5String (if this is the only allowed type, e.g., emailAddress), printableString and utf8String, whereas the string types teletexString, universalString, and bmpString are not supported.
+In the former case, the absolute value of the int encodes the attribute type (see {{fig-rdnattrtype}}) and the sign is used to represent the character string type in the X.509 certificate; positive for utf8String, negative for printableString. Attribute values which are always of type IA5String are unambiguously represented using a non-negative int. Examples include emailAddress and domainComponent (see {{RFC5280}}). In CBOR, all text strings are UTF-8 encoded and in natively signed C509 certificates all CBOR ints SHALL be non-negative. Text strings SHALL still adhere to any {{RFC5280}} restrictions. serialNumber SHALL only contain the 74-character subset of ASCII allowed by printableString and countryName SHALL have length 2. CBOR encoding is allowed for IA5String (if this is the only allowed type, e.g., emailAddress), printableString and utf8String, whereas the string types teletexString, universalString, and bmpString are not supported.
 
 
 The text strings are further optimized as follows:
@@ -352,7 +352,7 @@ The text strings are further optimized as follows:
   * If the text string contains an EUI-64 of the form "HH-HH-HH-HH-HH-HH-HH-HH" where each 'H' is one of the symbols '0'-'9' or 'A'-'F', it is encoded as a CBOR tagged MAC address using the CBOR tag 48, see {{Section 2.4 of RFC9542}}. If of the form "HH-HH-HH-FF-FE-HH-HH-HH", it is encoded as a 48-bit MAC address, otherwise as a 64-bit MAC address. See example in {{rfc7925-prof}}.
   * Otherwise, it is encoded as a CBOR text string.
 
-The final encoding of the extension value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
+The final encoding of the attribute value may therefore be text, bytes, or tag, i.e., SpecialText. If Name contains a single 'common name' attribute with attributeType = +1, it is for compactness encoded as just the SpecialText containing the single attribute value.
 
 In natively signed C509 certificates, bytes and tag 48 do not correspond to any predefined text string encoding and may also be used for other attribute types.
 
@@ -364,7 +364,7 @@ The 'notBefore' and 'notAfter' fields are encoded as unwrapped CBOR epoch-based 
 
 ### subject {#subject}
 
-The 'subject' field is encoded exactly like issuer, except that the CBOR simple value is not a valid value.
+The 'subject' field is encoded exactly like issuer, except that the CBOR simple value null is not a valid value.
 
 ### subjectPublicKeyInfo
 
@@ -534,6 +534,11 @@ CBOR encoding of the following extension values is fully supported:
 
 * TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
+~~~~~~~~~~~ cddl
+   TLSFeatures = [* feature: uint]
+~~~~~~~~~~~
+{: sourcecode-name="c509.cddl"}
+
 CBOR encoding of the following extension values are partly supported:
 
 * Subject Alternative Name (subjectAltName). If the subject alternative name only contains general names registered in {{GN}} the extension value can be CBOR encoded. extensionValue is encoded as an array of (int, any) pairs where each pair encodes a general name (see {{GN}}). If subjectAltName contains exactly one dNSName, the array and the int are omitted and extensionValue is the dNSName encoded as a CBOR text string. In addition to the general names defined in {{RFC5280}}, the otherName with type-id id-on-hardwareModuleName, id-on-SmtpUTF8Mailbox and id-on-MACAddress have been given their own ints; such otherName are encoded as follows:
@@ -559,9 +564,9 @@ CBOR encoding of the following extension values are partly supported:
 
 ~~~~~~~~~~~ cddl
    DistributionPointName = [
-     fullName  [ 2 * text ] / text,
-     reasons   uint / null,
-     cRLIssuer Name / null,
+     fullName:  [ 2 * text ] / text,
+     reasons:   uint / null,
+     cRLIssuer: Name / null,
    ]
 
    CRLDistributionPoints = [ + DistributionPointName ] / text
@@ -596,7 +601,7 @@ CBOR encoding of the following extension values are partly supported:
    KeyIdentifierArray = [
      keyIdentifier: KeyIdentifier,
      authorityCertIssuer: GeneralNames,
-     authorityCertSerialNumber: CertificateSerialNumber
+     authorityCertSerialNumber: CertificateSerialNumber,
    ]
    AuthorityKeyIdentifier = KeyIdentifierArray / KeyIdentifier
 ~~~~~~~~~~~
@@ -630,10 +635,10 @@ CBOR encoding of the following extension values are partly supported:
 * Subject Directory Attributes (subjectDirectoryAttributes). Encoded as attributes in issuer and subject with the difference that there can be more than one attributeValue.
 
 ~~~~~~~~~~~ cddl
-RDNAttributes = (
-    ( attributeType: int, attributeValue: [ + SpecialText] ) //
-    ( attributeType: ~oid, attributeValue: [+ bytes] )
-)
+   RDNAttributes = (
+     ( attributeType: int, attributeValue: [ + SpecialText] ) //
+     ( attributeType: ~oid, attributeValue: [+ bytes] )
+   )
    SubjectDirectoryAttributes = [ + RDNAttributes ]
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
@@ -647,11 +652,6 @@ RDNAttributes = (
 {: sourcecode-name="c509.cddl"}
 
 * AS Identifiers v2 (id-pe-autonomousSysIds-v2). The X.509 extension AS Identifiers v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "AS Identifiers".
-
-~~~~~~~~~~~ cddl
-   TLSFeatures = [* feature: uint]
-~~~~~~~~~~~
-{: sourcecode-name="c509.cddl"}
 
 ### Example Encoding of Extensions
 
@@ -829,8 +829,8 @@ MessageDigest = bytes
 
 DhSigStaticType = [
   issuer: Name,
-  serialNumber: CertificateSerialNumber
-  hashValue: MessageDigest
+  serialNumber: CertificateSerialNumber,
+  hashValue: MessageDigest,
 ]
 ~~~~~~~~~~~
 {: sourcecode-name="c509.cddl"}
@@ -867,7 +867,7 @@ PrivateKeyPossessionStatement = [
   cert: C509Certificate / null,
 ]
 ~~~~~~~~~~~
-
+{: sourcecode-name="c509.cddl"}
 
 ## Certification Request Template {#CRT}
 
@@ -914,7 +914,7 @@ Different types of Certification Request Templates can be defined (see {{temp-ty
 
 The presence of a Defined (non-undefined) value in a C509CertificationRequestTemplate indicates that the server expects the client to use that value in the certification request. If multiple AlgorithmIdentifier or c509CertificationRequestType values are present, the server expects the client to select one of them for use in the Certification Request. The presence of an undefined value indicates that the client is expected to provide an appropriate value for that field. For example, if the server includes a subjectAltName with a GeneralNameType iPAddress and a GeneralNameValue empty byte string, this means that the client SHOULD fill in a corresponding GeneralNameValue.
 
-For AttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal shall not be less than minimal, and maximal shall be positive. Negative attributeType is not allowed.
+For RDNAttributeTemplate, the minOccurs and maxOccurs fields specify the minimal and maximal occurrences of attributes of the given attributeType; maximal shall not be less than minimal, and maximal shall be positive. Negative attributeType is not allowed.
 
 For ExtensionTemplate, the field "optional" specifies whether an extension of the given extensionID is optional. Negative extensionID is not allowed.
 
@@ -1078,12 +1078,12 @@ IANA has created a new registry titled "C509 Private Key Types" in the new regis
 |       | subjectPrivateKey: COSE_Key                               |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-rivkeys title="C509 Private Key Types"}
+{: #fig-privkeys title="C509 Private Key Types"}
 {: artwork-align="center"}
 
 ## C509 Certification Request Templates Types Registry {#temp-type}
 
-IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review" and "Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Certification Request Templates Types" under the new registry group "CBOR Encoded X.509 (C509)". The columns of the registry are Value, Description, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1276,7 +1276,7 @@ The initial contents of the registry are:
 |    30 | Name:            Unstructured Address                     |
 |       | Identifiers:     unstructuredAddress                      |
 |       | OID:             1.2.840.113549.1.9.8                     |
-|       | DER:             06 0A 2A 86 48 86 F7 0D 01 09 08 00      |
+|       | DER:             06 0A 2A 86 48 86 F7 0D 01 09 08         |
 |       | Comments:        RFC 2985                                 |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
@@ -1315,7 +1315,7 @@ The initial contents of the registry are:
 |       | attributeValue:  PrivateKeyPossessionStatement            |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
-{: #fig-attrtype title="C509 CRAttributes"}
+{: #fig-crattrtype title="C509 CRAttributes"}
 {: artwork-align="center"}
 
 ## C509 Extensions Registry {#extype}
@@ -1338,7 +1338,7 @@ IANA has created a new registry titled "C509 Extensions" under the new registry 
 |       | OID:             2.5.29.15                                |
 |       | DER:             06 03 55 1D 0F                           |
 |       | Comments:        RFC 5280                                 |
-|       | AttributeValue:  KeyUsage                                 |
+|       | extensionValue:  KeyUsage                                 |
 +-------+-----------------------------------------------------------+
 |     3 | Name:            Subject Alternative Name                 |
 |       | Identifiers:     subjectAltName                           |
