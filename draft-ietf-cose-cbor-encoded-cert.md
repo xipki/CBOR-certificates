@@ -714,7 +714,7 @@ This section defines the COSE header parameters used for identifying or transpor
 {: #iana-sender title="Static ECDH Algorithm Values" cols="r l l l l"}
 
 
-## Private Key Structures
+## Private Key Structures {#private-key-structures}
 
 Certificate management also makes use of data structures including private keys, see, e.g., {{RFC7468}}. This section defines the following CBOR encoded structures:
 
@@ -1065,7 +1065,7 @@ IANA has created a new registry titled "C509 Certification Request Types" under 
 
 ## C509 Private Key Types Registry {#privkeys}
 
-IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
+IANA has created a new registry titled "C509 Private Key Types" in the new registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Comments, subjectPrivateKey, and Reference, where Value is an integer, and the other columns are text strings. The subjectPrivateKey describes the encoding of the subject private key, see examples in {{private-key-structures}}. All columns are mandatory. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review".  The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
@@ -1904,7 +1904,7 @@ IANA has created a new registry titled "C509 General Names" under the registry g
 
 ## C509 Signature Algorithms Registry {#sigalg}
 
-IANA has created a new registry titled "C509 Signature Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The registry includes both signature algorithms and non-signature proof-of-possession algorithms. The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. Alignment with the value of public key algorithm MUST be considered, see instruction in {{pkalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Signature Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The registry includes both signature algorithms and non-signature proof-of-possession algorithms. The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. Alignment with the value of public key algorithm must be considered, see instruction in {{pkalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 <!-- NOTE: Check referenced section number hardcoded in the table. -->
 
@@ -2092,7 +2092,7 @@ IANA has created a new registry titled "C509 Signature Algorithms" under the reg
 
 ## C509 Public Key Algorithms Registry {#pkalg}
 
-IANA has created a new registry titled "C509 Public Key Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. If the public key can only be used with one signature algorithm and the OID of the public key algorithm is the same as the signature algorithm, then the value MUST be chosen equal to the value of signature algorithm, see {{sigalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
+IANA has created a new registry titled "C509 Public Key Algorithms" under the registry group "CBOR Encoded X.509 (C509)". The fields of the registry are Value, Name, Identifiers, OID, Parameters, DER, Comments, and Reference, where Value is an integer, and the other columns are text strings. The fields Name, OID, Parameters, and DER are mandatory. If the public key can only be used with one signature algorithm and the OID of the public key algorithm is the same as the signature algorithm, then the value must be chosen equal to the value of signature algorithm, see {{sigalg}}. For values in the interval \[-24, 23\] the registration procedure is "IETF Review with Expert Review". For all other values the registration procedure is "Expert Review". The initial contents of the registry are:
 
 ~~~~~~~~~~~
 +-------+-----------------------------------------------------------+
