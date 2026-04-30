@@ -120,7 +120,6 @@ informative:
   RFC9191:
   RFC9528: edhoc
   I-D.ietf-uta-tls13-iot-profile:
-  I-D.ietf-tls-ctls:
   I-D.ietf-lamps-rfc7030-csrattrs:
 
   CAB-TLS:
@@ -239,7 +238,7 @@ CBOR is a data format designed for small code size and small message size to sup
 
 The C509 encoding supports a large subset of {{RFC5280}} and all certificates compatible with the {{RFC7925}}, IEEE 802.1AR (DevID) {{IEEE-802.1AR}}, CAB Baseline {{CAB-TLS}},  {{CAB-Code}}, RPKI {{RFC6487}}, Wi-SUN {{Wi-SUN}}, and eUICC {{GSMA-eUICC}} profiled X.509 certificates, and is designed to render a compact encoding of certificates used in constrained environments.  This document does not specify a certificate profile.
 
-CAB Baseline Requirements {{CAB-TLS}}, {{RFC7925}}, {{IEEE-802.1AR}}, and CNSA 1.0 {{RFC8603}} specify certificate profiles which can be applied to certificate-based authentication with, e.g., TLS {{RFC8446}}, QUIC {{RFC9000}}, DTLS {{RFC9147}}, COSE {{RFC9052}}, EDHOC {{-edhoc}}, or Compact TLS 1.3 {{I-D.ietf-tls-ctls}}. {{RFC7925}}, RFC7925bis {{I-D.ietf-uta-tls13-iot-profile}}, and IEEE 802.1AR {{IEEE-802.1AR}} specifically target IoT deployments.
+CAB Baseline Requirements {{CAB-TLS}}, {{RFC7925}}, {{IEEE-802.1AR}}, and CNSA 1.0 {{RFC8603}} specify certificate profiles which can be applied to certificate-based authentication with, e.g., TLS {{RFC8446}}, QUIC {{RFC9000}}, DTLS {{RFC9147}}, COSE {{RFC9052}}, or EDHOC {{-edhoc}}. {{RFC7925}}, RFC7925bis {{I-D.ietf-uta-tls13-iot-profile}}, and IEEE 802.1AR {{IEEE-802.1AR}} specifically target IoT deployments.
 
 At the time of publishing there are several implementations of C509 targeting, e.g., in-vehicle and vehicle-to-cloud communication, Uncrewed Aircraft Systems (UAS), and Global Navigation Satellite System (GNSS). When used to re-encode DER-encoded X.509 certificates, the CBOR encoding can reduce the size of {{RFC7925}}-profiled certificates by over 50%, see {{appA}}.
 
