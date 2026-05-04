@@ -66,6 +66,7 @@ normative:
   RFC8742:
   RFC8949:
   RFC9052:
+  RFC9053:
   RFC9090:
   RFC9277:
   RFC9360:
@@ -416,7 +417,7 @@ For elliptic curve public keys in Weierstrass form (id-ecPublicKey), keys may be
 
 ### Encoding of issuerSignatureValue
 
-For ECDSA signatures, the SEQUENCE and INTEGER type and length fields as well as any leading 0x00 byte (to indicate that the number is not negative) are omitted. Each of the two INTEGER value fields are then padded with leading zeroes to the same fixed length, given by the number of bytes needed to represent the order n of the cyclic subgroup used with the algorithm. For example, for P-256, the number of bytes for each integer is 32. The resulting byte string is encoded as a CBOR byte string.
+ECDSA signatures are encoded in the same way as in {{Section 2.1 of RFC9053}}. For example, for P-256, the number of bytes for each integer is 32. The resulting byte string is encoded as a CBOR byte string.
 
 ## Encoding of Extensions {#ext-encoding}
 
@@ -529,7 +530,11 @@ CBOR encoding of the following extension values is fully supported:
 
 * IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
 
+<<<<<<< coreys-review
+* OCSP No Check (id-pkix-ocsp-nocheck). The CBOR encoded extensionValue is the value null.
+=======
 * OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR-encoded. The CBOR-encoded extensionValue is the value null.
+>>>>>>> master
 
 * TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
@@ -993,13 +998,13 @@ In the examples using FN-DSA and ML-DSA certificate chains, the largest portion 
 
 # Security Considerations {#sec-cons}
 
-The CBOR encoding of X.509 certificates does not change the security assumptions needed when deploying standard X.509 certificates but decreases the number of fields transmitted, which reduces the risk for implementation errors. The security considerations of {{RFC5280}} apply.
+The CBOR encoding of X.509 certificates does not change the security assumptions needed when deploying standard X.509 certificates. The same security procedures applies as for X.509. For example the same certificate path validation as defined in {{Section 6 of RFC5280}} MUST be performed on C509 certificates before they can be considered trusted. The security considerations of {{RFC5280}} apply.
 
 The use of natively signed C509 certificates removes the need for ASN.1 encoding, which is a rich source of security vulnerabilities.
 
 Conversion between the certificate formats can be made in constant time to reduce risk of information leakage through side channels.
 
-The mechanism in this document does not reveal any additional information compared to X.509. Because of the difference in size, it will be possible to detect that this profile is used. The gateway solution described in {{dep-set}} requires unencrypted certificates and is not recommended.
+The mechanism in this document does not reveal any additional information compared to X.509. Because of the difference in size, it will be possible to detect that this profile is used. The gateway solution described in {{dep-set}} requires unencrypted certificates which may violate identity protection and is not recommended.
 
 Any issues with decoding or parsing a C509 certificate should be handled exactly as how such errors would be handled for the corresponding X.509 certificate. For example, a non-critical extension MAY be ignored if it is not recognized, see {{Section 4.2 of RFC5280}}.
 
@@ -2113,8 +2118,13 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Identifiers: rsaEncryption                                |
 |       | OID:         1.2.840.113549.1.1.1                         |
 |       | Parameters:  NULL                                         |
+<<<<<<< coreys-review
+|       | DER:         30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
+=======
 |       | DER:         30 0D 06 09 2A 86 48 86 F7 0D 01 01 01 05 00 |
 |       | Comments:    Compressed subjectPublicKey                  |
+>>>>>>> master
 +-------+-----------------------------------------------------------+
 |     1 | Name:        EC Public Key (Weierstrass) with secp256r1   |
 |       | Identifiers: ecPublicKey, id-ecPublicKey                  |
@@ -2122,7 +2132,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Parameters:  namedCurve = secp256r1 (1.2.840.10045.3.1.7) |
 |       | DER:         30 13 06 07 2A 86 48 CE 3D 02 01 06 08 2A 86 |
 |       |              48 CE 3D 03 01 07                            |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 |       |              Also known as P-256, ansip256r1, prime256v1  |
 +-------+-----------------------------------------------------------+
 |     2 | Name:        EC Public Key (Weierstrass) with secp384r1   |
@@ -2131,7 +2141,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Parameters:  namedCurve = secp384r1 (1.3.132.0.34)        |
 |       | DER:         30 10 06 07 2A 86 48 CE 3D 02 01 06 05 2B 81 |
 |       |              04 00 22                                     |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 |       |              Also known as P-384, ansip384r1              |
 +-------+-----------------------------------------------------------+
 |     3 | Name:        EC Public Key (Weierstrass) with secp521r1   |
@@ -2140,7 +2150,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Parameters:  namedCurve = secp521r1 (1.3.132.0.35)        |
 |       | DER:         30 10 06 07 2A 86 48 CE 3D 02 01 06 05 2B 81 |
 |       |              04 00 23                                     |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 |       |              Also known as P-521, ansip521r1              |
 +-------+-----------------------------------------------------------+
 |     6 | Name:        EC Public Key (Weierstrass) with             |
@@ -2151,7 +2161,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       |              (1.2.156.10197.1.301)                        |
 |       | DER:         30 13 06 07 2A 86 48 CE 3D 02 01 06 08 2A 81 |
 |       |              1C CF 55 01 82 2D                            |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 |     8 | Name:        X25519 (Montgomery)                          |
 |       | Identifiers: id-X25519                                    |
@@ -2189,7 +2199,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       |              (1.3.36.3.3.2.8.1.1.7)                       |
 |       | DER:         30 14 06 07 2A 86 48 CE 3D 02 01 06 09 2B 24 |
 |       |              03 03 02 08 01 01 07                         |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 |    25 | Name:        EC Public Key (Weierstrass) with             |
 |       |              brainpoolP384r1                              |
@@ -2199,7 +2209,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       |              (1.3.36.3.3.2.8.1.1.11)                      |
 |       | DER:         30 14 06 07 2A 86 48 CE 3D 02 01 06 09 2B 24 |
 |       |              03 03 02 08 01 01 0B                         |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 |    26 | Name:        EC Public Key (Weierstrass) with             |
 |       |              brainpoolP512r1                              |
@@ -2209,7 +2219,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       |              (1.3.36.3.3.2.8.1.1.13)                      |
 |       | DER:         30 14 06 07 2A 86 48 CE 3D 02 01 06 09 2B 24 |
 |       |              03 03 02 08 01 01 0D                         |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 |    27 | Name:        EC Public Key (Weierstrass) with             |
 |       |              FRP256v1                                     |
@@ -2219,7 +2229,7 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       |              (1.2.250.1.223.101.256.1)                    |
 |       | DER:         30 15 06 07 2A 86 48 CE 3D 02 01 06 0A 2A 81 |
 |       |              7A 01 81 5F 65 82 00 01                      |
-|       | Comments:    Compressed subjectPublicKey                  |
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 ~~~~~~~~~~~
 {: #fig-pkalgs title="C509 Public Key Algorithms"}
