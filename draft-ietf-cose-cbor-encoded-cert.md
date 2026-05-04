@@ -530,11 +530,7 @@ CBOR encoding of the following extension values is fully supported:
 
 * IPAddrBlocks v2 (id-pe-ipAddrBlocks-v2). The X.509 extension IPAddrBlocks v2 is specified in {{RFC8360}}. The extension value is encoded exactly like in the extension "IPAddrBlocks".
 
-<<<<<<< coreys-review
 * OCSP No Check (id-pkix-ocsp-nocheck). The CBOR encoded extensionValue is the value null.
-=======
-* OCSP No Check (id-pkix-ocsp-nocheck). If the extension value is NULL, it can be CBOR-encoded. The CBOR-encoded extensionValue is the value null.
->>>>>>> master
 
 * TLS Features (id-pe-tlsfeature). The extensionValue is encoded as an array of integers, where each integer represents a TLS extension.
 
@@ -2118,13 +2114,8 @@ IANA has created a new registry titled "C509 Public Key Algorithms" under the re
 |       | Identifiers: rsaEncryption                                |
 |       | OID:         1.2.840.113549.1.1.1                         |
 |       | Parameters:  NULL                                         |
-<<<<<<< coreys-review
-|       | DER:         30 0d 06 09 2a 86 48 86 f7 0d 01 01 01 05 00 |
-|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
-=======
 |       | DER:         30 0D 06 09 2A 86 48 86 F7 0D 01 01 01 05 00 |
-|       | Comments:    Compressed subjectPublicKey                  |
->>>>>>> master
+|       | Comments:    subjectPublicKey encoded as in Section 3.2.1 |
 +-------+-----------------------------------------------------------+
 |     1 | Name:        EC Public Key (Weierstrass) with secp256r1   |
 |       | Identifiers: ecPublicKey, id-ecPublicKey                  |
