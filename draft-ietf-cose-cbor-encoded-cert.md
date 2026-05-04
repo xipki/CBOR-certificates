@@ -120,7 +120,6 @@ informative:
   RFC9191:
   RFC9528: edhoc
   I-D.ietf-uta-tls13-iot-profile:
-  I-D.ietf-tls-ctls:
   I-D.ietf-lamps-rfc7030-csrattrs:
 
   CAB-TLS:
@@ -239,7 +238,7 @@ CBOR is a data format designed for small code size and small message size in sys
 
 The C509 encoding supports a large subset of {{RFC5280}} and all certificates profiled for {{RFC7925}}, IEEE 802.1AR (DevID) {{IEEE-802.1AR}}, CAB Baseline {{CAB-TLS}}, {{CAB-Code}}, RPKI {{RFC6487}}, Wi-SUN {{Wi-SUN}}, and eUICC {{GSMA-eUICC}}, and is designed to provide a compact encoding for certificates used in constrained environments. This document does not specify a certificate profile.
 
-CAB Baseline Requirements {{CAB-TLS}}, {{RFC7925}}, {{IEEE-802.1AR}}, and CNSA 1.0 {{RFC8603}} specify certificate profiles that can be applied to certificate-based authentication with, for example, TLS {{RFC8446}}, QUIC {{RFC9000}}, DTLS {{RFC9147}}, COSE {{RFC9052}}, EDHOC {{-edhoc}}, or Compact TLS 1.3 {{I-D.ietf-tls-ctls}}. {{RFC7925}}, RFC7925bis {{I-D.ietf-uta-tls13-iot-profile}}, and IEEE 802.1AR {{IEEE-802.1AR}} specifically target IoT deployments.
+CAB Baseline Requirements {{CAB-TLS}}, {{RFC7925}}, {{IEEE-802.1AR}}, and CNSA 1.0 {{RFC8603}} specify certificate profiles that can be applied to certificate-based authentication with, for example, TLS {{RFC8446}}, QUIC {{RFC9000}}, DTLS {{RFC9147}}, COSE {{RFC9052}}, EDHOC {{-edhoc}}. {{RFC7925}}, RFC7925bis {{I-D.ietf-uta-tls13-iot-profile}}, and IEEE 802.1AR {{IEEE-802.1AR}} specifically target IoT deployments.
 
 At the time of publication, several C509 implementations target, for example, in-vehicle and vehicle-to-cloud communication, Uncrewed Aircraft Systems (UAS), and Global Navigation Satellite System (GNSS) deployments. When used to re-encode DER-encoded X.509 certificates, the CBOR encoding can reduce the size of {{RFC7925}}-profiled certificates by more than 50%; see {{appA}}.
 
@@ -3381,4 +3380,5 @@ h'6709C992919B49C48FD931D05C497D3865E6084C91DF3A4C7E781F418543B023
 # Acknowledgments
 {: numbered="no"}
 
-The authors want to thank Henk Birkholz, Mohamed Boucadair, Corey Bonnell, Carsten Bormann, Viktor Dukhovni, Paul Hoffman, Russ Housley, Christopher Inacio, Olle Johansson, Benjamin Kaduk, Ted Lemon, Ilari Liusvaara, Laurence Lundblade, Francesca Palombini, Thomas Peterson, Michael Richardson, Stefan Santesson, Jim Schaad, Brian Sipos, Rene Struik, Fraser Tweedale, Gunter Van de Velde, Éric Vyncke, and Paul Wouters for reviewing and commenting on intermediate versions of the draft.
+The authors want to thank Henk Birkholz, Mohamed Boucadair, Corey Bonnell, Carsten Bormann, Roman Danyliw, Viktor Dukhovni, Paul Hoffman, Russ Housley, Christopher Inacio, Olle Johansson, Benjamin Kaduk, Ted Lemon, Ilari Liusvaara, Laurence Lundblade, Francesca Palombini, Thomas Peterson, Michael Richardson, Stefan Santesson, Jim Schaad, Brian Sipos, Rene Struik, Fraser Tweedale, Gunter Van de Velde, Éric Vyncke, and Paul Wouters for reviewing and commenting on intermediate versions of the draft.
+The authors want to thank Henk Birkholz, Mohamed Boucadair, Corey Bonnell, Carsten Bormann, Roman Danyliw, Viktor Dukhovni, Paul Hoffman, Russ Housley, Christopher Inacio, Olle Johansson, Benjamin Kaduk, Ted Lemon, Ilari Liusvaara, Laurence Lundblade, Francesca Palombini, Thomas Peterson, Michael Richardson, Stefan Santesson, Jim Schaad, Brian Sipos, Rene Struik, Fraser Tweedale, Gunter Van de Velde, Éric Vyncke, and Paul Wouters for reviewing and commenting on intermediate versions of the draft.
