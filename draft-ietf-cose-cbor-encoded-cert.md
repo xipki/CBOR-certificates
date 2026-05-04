@@ -119,7 +119,7 @@ informative:
   RFC9190:
   RFC9191:
   RFC9528: edhoc
-  RFC9908
+  RFC9908:
   I-D.ietf-uta-tls13-iot-profile:
 
   CAB-TLS:
