@@ -693,7 +693,7 @@ As the contents of c5b, c5c, c5t, and c5u are untrusted input, the header parame
 | c5b | 24 | COSE_C509 | An unordered bag of C509 certificates |
 | c5c | 25 | COSE_C509 | An ordered chain of C509 certificates |
 | c5t | 22 | COSE_CertHash | Hash of a C509Certificate |
-| c5u | 23 | uri | URI pointing to a COSE_C509 containing an ordered chain of certificates |
+| c5u | 23 | uri | URI pointing to a C509Certificate |
 {: #iana-header title="C509 COSE Header Parameters" cols="r l l l"}
 
 Certificates can also be identified with a 'kid' header parameter by storing the 'kid' value and the associated bag or chain in a dictionary.
@@ -709,7 +709,7 @@ This section defines the COSE header parameters used for identifying or transpor
 | Name | Algorithm | Label | Type | Description |
 | c5c-sender | ECDH-SS+HKDF-256, ECDH-SS+HKDF-512, ECDH-SS+A128KW, ECDH-SS+A192KW, ECDH-SS+A256KW | -30 (suggested) | COSE_C509 | An ordered chain of C509 certificates |
 | c5t-sender | ECDH-SS+HKDF-256, ECDH-SS+HKDF-512, ECDH-SS+A128KW, ECDH-SS+A192KW, ECDH-SS+A256KW | -31 (suggested) | COSE_CertHash | Hash of a C509Certificate |
-| c5u-sender | ECDH-SS+HKDF-256, ECDH-SS+HKDF-512, ECDH-SS+A128KW, ECDH-SS+A192KW, ECDH-SS+A256KW | -32 (suggested) | uri | URI pointing to a COSE_C509 containing an ordered chain of certificates |
+| c5u-sender | ECDH-SS+HKDF-256, ECDH-SS+HKDF-512, ECDH-SS+A128KW, ECDH-SS+A192KW, ECDH-SS+A256KW | -32 (suggested) | uri | URI pointing to a C509Certificate |
 {: #iana-sender title="Static ECDH Algorithm Values" cols="r l l l l"}
 
 
