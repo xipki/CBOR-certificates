@@ -2863,7 +2863,7 @@ Certificate:
     Signature Algorithm: ecdsa-with-SHA256
     Issuer: C=US, ST=CA, O=Example Inc, OU=certification,
             CN=802.1AR CA
-    Validity    
+    Validity
       Not Before: Jan 31 11:29:16 2019 GMT
       Not After : Dec 31 23:59:59 9999 GMT
     Subject: C=US, ST=CA, L=LA, O=example Inc,
